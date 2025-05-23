@@ -1,0 +1,152 @@
+
+  body{
+    background: linear-gradient(to right, #519aee, #a7d3f0);
+    /* background-repeat: no-repeat;
+    background-size: cover; */
+    color: #000;
+    
+  }
+  .navbar {
+    background-color: #004080;
+    color: white;
+    padding: 1rem 0;
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+  }
+
+  .logo {
+    margin: 0;
+  }
+
+  nav a, .dropbtn {
+    color: white;
+    margin: 0 1rem;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+  }
+
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropbtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    color: black;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+  .dropdown-content a {
+    color: black;
+    padding: 0.75rem 1rem;
+    display: block;
+    text-decoration: none;
+  }
+
+  .dropdown-content a:hover {
+    background-color: #dddddd;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .hero-content{
+    font-size: 4rem;
+    font-family:'Times New Roman', Times, serif;
+    text-align: center;
+    line-height: .5rem;
+  }
+
+  .hero-content h4{
+    font-size: 3rem;
+    font-family: serif;
+    font-weight: lighter;
+    font-style: italic;
+    color: #313030;
+  }
+
+  .login{
+    display: flex;
+    justify-content: space-around;
+   
+  }
+
+.image{
+    width:auto;
+    max-width: 100%;
+}
+
+
+.login-student, .login-admin{
+    /* padding-bottom: 0rem; */
+    /* border: #004080 solid; */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    
+    border-radius: 2rem;
+    background-color: #fafafa;
+    width: 20rem;
+    height: 20rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    transform: scale(101%);
+   
+}
+
+.login-student img, .login-admin img{
+    max-width: 100%;
+    height: 80%;
+    
+}
+
+.login-student button, .login-admin button{
+    border-radius: 12rem;
+    align-items: center;
+    padding: .5rem 1rem;
+    margin: 0 1rem;
+    background-color: #004080;
+    color: #fefdfd;
+}
+
+.login-student button:hover, .login-admin button:hover{
+    background-color: #042648;
+}
+
+
+
