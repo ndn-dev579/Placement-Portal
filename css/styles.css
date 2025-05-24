@@ -137,7 +137,7 @@
 }
 
 .login-student button, .login-admin button{
-    border-radius:8px; /*12rem; 12rem */
+    border-radius:2rem; /*12rem; 12rem */
     align-items: center;
     padding: .5rem 1rem;
     margin: 0 1rem;
