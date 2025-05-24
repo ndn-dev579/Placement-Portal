@@ -7,7 +7,7 @@
     
   }
   .navbar {
-    background-color: #004080;
+    background-color: #00408058;
     color: white;
     padding: 1rem 0;
   }
@@ -102,7 +102,8 @@
 
   .login{
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    gap:2rem;
    
   }
 
@@ -136,16 +137,16 @@
 }
 
 .login-student button, .login-admin button{
-    border-radius: 12rem;
+    border-radius:8px; /*12rem; 12rem */
     align-items: center;
     padding: .5rem 1rem;
     margin: 0 1rem;
-    background-color: #004080;
+    background-color: #007bff;;
     color: #fefdfd;
 }
 
 .login-student button:hover, .login-admin button:hover{
-    background-color: #042648;
+    background-color: #0056b3;
 }
 
 
