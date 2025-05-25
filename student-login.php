@@ -10,9 +10,9 @@
   <div class="login-container">
     <h2>Student Login</h2>
     <form action="php/student_auth.php" method="POST">
-      <input type="text" name="text" placeholder="Enter your PRN number" required>
+      <input type="text" name="prn" placeholder="Enter your PRN number" required>
       <input type="password" name="password" placeholder="Password" required>
-      <button type="submit">Login</button>
+      <input type="submit" name="submit" value="Login">
     </form>
     <p>New user? <a href="#">Contact Admin for Registration</a></p>
   </div>
