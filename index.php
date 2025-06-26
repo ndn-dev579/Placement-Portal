@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>landing page</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="student-login.php">
 
     
 </head>
@@ -22,7 +23,7 @@
       <div class="dropdown">
         <button class="dropbtn"><i class="fas fa-sign-in-alt"></i> Login <i class="fas fa-caret-down"></i></button>
         <div class="dropdown-content">
-          <a href="login.html?type=student">Student Login</a>
+          <a href="student-login.php">Student Login</a>
           <a href="login.html?type=staff">Staff Login</a>
           <a href="login.html?type=admin">Admin Login</a>
         </div>
