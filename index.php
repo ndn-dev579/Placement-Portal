@@ -24,8 +24,7 @@
         <button class="dropbtn"><i class="fas fa-sign-in-alt"></i> Login <i class="fas fa-caret-down"></i></button>
         <div class="dropdown-content">
           <a href="student-login.php">Student Login</a>
-          <a href="login.html?type=staff">Staff Login</a>
-          <a href="login.html?type=admin">Admin Login</a>
+          <a href="student-registration.php">Student Registratio</a>
         </div>
       </div>
       <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
@@ -42,7 +41,7 @@
         <div class="login">
             <div class="login-content">
                 <img class="login-image" src="pictures/student login.jpg" alt="student-picture">
-                 <a href="#" class="btn primary">Are you a Student?</a>
+                 <a href="student-login.php" class="btn primary">Are you a Student?</a>
             </div>
             <div class="login-content">
                 <img class="login-image" src="pictures/admin login.jpg" alt="admin-picture">

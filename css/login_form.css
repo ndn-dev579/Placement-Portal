@@ -1,0 +1,137 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    /* background: #f9f9f9; */
+    background-color: aliceblue;
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    justify-content:end;
+    align-items: center;
+    margin-right: 150px;
+    height: 100vh;
+  }
+
+  .login-container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 350px;
+  }
+
+  
+  .login-container h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+ 
+  .login-container label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: 500;
+    color: rgb(52, 48, 48);
+  }
+
+
+  .login-container input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .login-container input:focus {
+    border-color: #6c63ff;
+    outline: none;
+  }
+
+ 
+  .login-btn {
+    margin-top: 20px;
+    width: 100%;
+    background: #6c63ff;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .login-container .login-btn:hover {
+    color: rgb(253, 252, 252);
+    font-size: 17px;
+    background-color: #163cb0;
+  }
+
+  .login-btn:active{
+    background-color: #110c61;
+  }
+
+  .student-admin-btn{
+    width: 100%;
+    display: flex;
+    /* justify-content: space-between; */
+    padding: 1rem 2em;
+    border: #574fe1 1px solid;
+  }
+
+  .student-admin-btn button{
+    
+  }
+
+  .bg-illustration {
+    position: absolute;
+    top: 25%;
+    right: 45%;
+    width: 700px;
+
+    
+  }
+  
+  .role-toggle {
+    display: flex;
+    /* gap: 4px;  */
+    border: 1px solid #ddd;
+    background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+
+    /* padding:2px; */
+    margin-bottom: 25px;
+  }
+  
+  .toggle-btn {
+    flex: 1;
+    padding: 10px;
+    background: #ddd;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    margin: 2px 2px;
+    border-radius: 10px;
+    color: rgb(65, 65, 65);
+    
+  }
+  
+  .toggle-btn.active {
+    background: #ffffff;
+    color: #3366ff;
+    /* box-shadow: inset 0 -2px 0 #3366ff; */
+  } 
+
+  .toggle-btn:hover{
+    
+    font-size: 17px;
+    
+  }
+
+
+  
