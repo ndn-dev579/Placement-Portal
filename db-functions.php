@@ -1,0 +1,131 @@
+<?php
+// db/db.php
+
+// Singleton-style procedural DB connection
+function getConnection() {
+    static $conn = null;
+
+    if ($conn === null) {
+        $host = "localhost";
+        $user = "root";
+        $pass = "";
+        $dbname = "campushire";
+
+        $conn = mysqli_connect($host, $user, $pass, $dbname);
+
+        if (!$conn) {
+            die("Connection failed: " . mysqli_connect_error());
+        }
+    }
+
+    return $conn;
+}
+
+// --- User Authentication Functions ---
+function registerUser($username, $email, $password, $role) {
+    $conn = getConnection();
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = mysqli_prepare($conn, "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt, "ssss", $username, $email, $hashed_password, $role);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+function getUserByEmailAndRole($email, $role) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ? AND role = ?");
+    mysqli_stmt_bind_param($stmt, "ss", $email, $role);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+    return $user;
+}
+
+// --- Student Profile Functions ---
+function getStudentByUserId($user_id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "SELECT * FROM students WHERE user_id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $student = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+    return $student;
+}
+
+function createStudentProfile($user_id, $prn, $name, $phone, $dob, $id_card, $resume, $gpas) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "INSERT INTO students (user_id, prn, name, phone_number, dob, id_card, resume_path,
+        gpa_sem1, gpa_sem2, gpa_sem3, gpa_sem4, gpa_sem5, gpa_sem6)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    mysqli_stmt_bind_param(
+        $stmt,
+        "issssssdddddd",
+        $user_id,
+        $prn,
+        $name,
+        $phone,
+        $dob,
+        $id_card,
+        $resume,
+        $gpas[0], $gpas[1], $gpas[2], $gpas[3], $gpas[4], $gpas[5]
+    );
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+// --- Company Functions ---
+function getAllCompanies() {
+    $conn = getConnection();
+    $result = mysqli_query($conn, "SELECT * FROM companies ORDER BY name");
+    $companies = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $companies[] = $row;
+    }
+    return $companies;
+}
+
+function getCompanyById($id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "SELECT * FROM companies WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $company = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+    return $company;
+}
+
+// --- Job Application Functions ---
+function applyToJob($job_id, $student_id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "INSERT INTO job_applications (job_id, student_id) VALUES (?, ?)");
+    mysqli_stmt_bind_param($stmt, "ii", $job_id, $student_id);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+function getApplicationsByStudent($student_id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "
+        SELECT ja.*, j.title, c.name as company_name
+        FROM job_applications ja
+        JOIN jobs j ON ja.job_id = j.id
+        JOIN companies c ON j.company_id = c.id
+        WHERE ja.student_id = ?
+        ORDER BY ja.application_date DESC");
+    mysqli_stmt_bind_param($stmt, "i", $student_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $applications = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $applications[] = $row;
+    }
+    mysqli_stmt_close($stmt);
+    return $applications;
+}
+?>
