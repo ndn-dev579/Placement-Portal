@@ -34,7 +34,6 @@ CREATE TABLE IF NOT EXISTS student (
 CREATE TABLE IF NOT EXISTS companies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    title VARCHAR(100),
     description TEXT,
     website VARCHAR(255),
     logo_path VARCHAR(255),
@@ -47,8 +46,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     company_id INT NOT NULL,
     title VARCHAR(100) NOT NULL,
     description TEXT,
-    allowed_streams TEXT,
-    allowed_semesters TEXT,
+    allowed_streams TEXT,   
     last_date_to_apply DATE,
     FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 );
