@@ -112,6 +112,28 @@ function getCompanyById($id) {
     return $company;
 }
 
+function updateCompany($id, $name, $description, $website, $logo_path) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn,"UPDATE companies SET name = ?, description = ?, website = ?, logo_path = ? WHERE id = ?");
+    mysqli_stmt_bind_param($stmt,"ssssi", $name,  $description, $website, $logo_path, $id);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+function deleteCompany($id){
+    $conn=getConnection();
+    $sql="DELETE FROM companies WHERE id=?;";
+    $stmt=mysqli_prepare($conn,$sql) ;
+    mysqli_stmt_bind_param($stmt,"i",$id);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+
+}
+
+
+
 // --- Job Application Functions ---
 function applyToJob($job_id, $student_id) {
     $conn = getConnection();
@@ -196,8 +218,5 @@ function updateRejectedStudentBasic($student_id, $prn, $dob, $id_card_path) {
     mysqli_stmt_close($stmt);
     return $success;
 }
-
-
-
 
 ?>

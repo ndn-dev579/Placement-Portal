@@ -104,6 +104,13 @@ $companies = getAllCompanies();
 
 <body>
     <h2 style="text-align:center; margin-bottom: 30px;">📋 Company Directory</h2>
+
+    <?php if (isset($_GET['deleted']) && $_GET['deleted'] == '1'): ?>
+        <div style="color: green; margin-bottom: 10px;">
+            ✅ Company deleted successfully!
+        </div>
+    <?php endif; ?>
+
     <div class="container">
         <?php if (empty($companies)): ?>
             <p>No companies found.</p>
@@ -112,10 +119,6 @@ $companies = getAllCompanies();
                 <div class="card">
                     <img class="logo" src="/Placement-Portal/uploads/logo/<?= htmlspecialchars($company['logo_path']) ?>"
                         alt="Logo">
-
-
-
-
 
                     <div class="card-content">
                         <h3><?= htmlspecialchars($company['name']) ?></h3>
