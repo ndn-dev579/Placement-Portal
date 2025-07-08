@@ -1,6 +1,6 @@
 <?php
 session_start();
- // adjust this if your DB config file path is different
+// adjust this if your DB config file path is different
 /*
   <?php
 // db/db.php
@@ -31,51 +31,70 @@ function getConnection() {
 
 require_once 'db-functions.php';
 
- // Always start session before working with $_SESSION
+// Always start session before working with $_SESSION
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $email    = $_POST['email'];
-    $password = $_POST['password'];
-    $role     = $_POST['role'];
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+  $role = $_POST['role'];
 
-    // Fetch from users table where role matches
-    $user = getUserByEmailAndRole($email, $role);
+  // Fetch from users table where role matches
+  $user = getUserByEmailAndRole($email, $role);
 
-    if ($user) {
-        if (password_verify($password, $user['password'])) {
-            
-            // Check if student is approved
-            if ($role === "student") {
-                $studentData = getStudentByUserId($user['id']);
-                if (!$studentData || $studentData['status'] !== 'approved') {
-                    echo "<script>alert('❌ Account not yet approved.'); history.back();</script>";
-                    exit;
-                }
-            }
 
-            // Store session data
-            $_SESSION['logged_in'] = true;
-            $_SESSION['email']     = $email;
-            $_SESSION['role']      = $role;
-            $_SESSION['user_id']   = $user['id'];
 
-            // Redirect based on role
-            if ($role === "admin") {
-                header("Location: ../admin/dashboard.php");
-            } else {
-                header("Location: ../student/dashboard.php");
-            }
-            exit;
+  if ($user) {
+    if (password_verify($password, $user['password'])) {
 
-        } else {
-            echo "<script>alert('❌ Incorrect password'); history.back();</script>";
-            exit;
+      // Student additional check
+      if ($role === "student") {
+        $studentData = getStudentByUserId($user['id']);
+
+        if (!$studentData) {
+          echo "<script>alert('❌ Student profile not found.'); history.back();</script>";
+          exit;
         }
-    } else {
-        echo "<script>alert('❌ No account found.'); history.back();</script>";
+
+        if ($studentData['status'] === 'pending') {
+          echo "<script>alert('⏳ Awaiting admin approval.'); history.back();</script>";
+          exit;
+        }
+      }
+
+      // ✅ Set session before anything else
+      $_SESSION['logged_in'] = true;
+      $_SESSION['email'] = $email;
+      $_SESSION['role'] = $role;
+      $_SESSION['user_id'] = $user['id'];
+
+      // ⚠️ If rejected — prompt resubmit
+      if ($role === "student" && $studentData['status'] === 'rejected') {
+        echo "<script>
+                if (confirm('⚠️ Your registration was rejected. Would you like to resubmit?')) {
+                    window.location.href = 'Admin/student-resubmit.php';
+                } else {
+                    history.back();
+                }
+            </script>";
         exit;
+      }
+
+      // ✅ Redirect based on role
+      if ($role === "admin") {
+        header("Location: ../admin/dashboard.php");
+      } else {
+        header("Location: ../student/dashboard.php");
+      }
+      exit;
+
+    } else {
+      echo "<script>alert('❌ Incorrect password'); history.back();</script>";
+      exit;
     }
+  }
 }
+
+
 ?>
 
 
@@ -87,22 +106,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">    
+  <meta charset="UTF-8">
   <title>Login</title>
   <!-- <link rel="stylesheet" href="css/styles.css"> -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/login_form.css"> 
+  <link rel="stylesheet" href="css/login_form.css">
 
-  
+
 </head>
+
 <body class="login-page">
-<img src="pictures/login-illustration.png" alt="decor" class="bg-illustration">
+  <img src="pictures/login-illustration.png" alt="decor" class="bg-illustration">
 
 
   <div class="login-container">
     <h2>Login</h2>
-    <form action="php/student_auth.php" method="POST">
+
+    <form action="" method="POST">
       <input type="hidden" name="role" id="role" value="student">
       <div class="role-toggle">
         <button class="toggle-btn active" id="studentBtn">🧑‍🎓Student</button>
@@ -128,23 +150,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     studentBtn.addEventListener("click", function () {
       studentBtn.classList.add("active");
       adminBtn.classList.remove("active");
-      role.value="student";
+      role.value = "student";
     });
 
     adminBtn.addEventListener("click", function () {
       adminBtn.classList.add("active");
       studentBtn.classList.remove("active");
-      role.value="admin";
+      role.value = "admin";
     });
   </script>
-
-  <?php
-
-  ?>
-
-
 </body>
-</html>
 
-</body>
 </html>

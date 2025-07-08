@@ -78,6 +78,19 @@ function createStudentProfile($user_id, $prn, $name, $phone, $dob, $id_card, $re
 }
 
 // --- Company Functions ---
+
+function createCompany($name, $description, $website, $logo_path = null) {
+    $conn = getConnection();
+
+    $stmt = mysqli_prepare($conn, "INSERT INTO companies (name, description, website, logo_path) VALUES (?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt, "ssss", $name, $description, $website, $logo_path);
+
+    $success = mysqli_stmt_execute($stmt);
+
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
 function getAllCompanies() {
     $conn = getConnection();
     $result = mysqli_query($conn, "SELECT * FROM companies ORDER BY name");
@@ -128,4 +141,63 @@ function getApplicationsByStudent($student_id) {
     mysqli_stmt_close($stmt);
     return $applications;
 }
+
+function deleteStudentById($student_id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "DELETE FROM students WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $student_id);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+// Approve Student Function
+function approveStudentById($student_id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "UPDATE students SET status = 'approved' WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $student_id);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+// Reject Student Function
+function rejectStudentById($student_id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "UPDATE students SET status = 'rejected' WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $student_id);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+function getPendingStudents() {
+    $conn = getConnection();
+    $query = "SELECT s.id, u.username, u.email, s.prn, s.dob, s.id_card, s.status
+              FROM students s
+              JOIN users u ON s.user_id = u.id
+              WHERE s.status = 'pending'";
+    $result = mysqli_query($conn, $query);
+    $students = [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $students[] = $row;
+    }
+
+    return $students;
+}
+
+
+function updateRejectedStudentBasic($student_id, $prn, $dob, $id_card_path) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "UPDATE students SET prn = ?, dob = ?, id_card = ?, status = 'pending' WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "sssi", $prn, $dob, $id_card_path, $student_id);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+
+
+
 ?>

@@ -1,58 +1,64 @@
 
 <?php
+require_once 'db-functions.php';
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-  $conn = mysqli_connect("localhost", "root", "", "campushire");
+    $username = $_POST['name'];
+    $email    = $_POST['email'];
+    $prn      = $_POST['prn'];
+    $dob      = $_POST['dob'];
+    $password = $_POST['password'];
+    $role     = "student"; // Fixed role
 
-  if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-  }
+    // Validate email format
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "<script>alert('Invalid email format ❗'); history.back();</script>";
+        exit();
+    }
 
-  $name     = $_POST['name'];
-  $email    = $_POST['email'];
-  $prn      = $_POST['prn'];
-  $dob      = $_POST['dob'];
-  $password = $_POST['password'];
+    // Check for duplicates in users or students
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ? OR username = ?");
+    mysqli_stmt_bind_param($stmt, "ss", $email, $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-  //  Email validation
-  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo "<script>alert('Invalid email format❗‼️'); 
-          history.back();</script>";
-    exit();
-  }
+    if (mysqli_num_rows($result) > 0) {
+        echo "<script>alert('⚠️ Email or Name already registered.'); history.back();</script>";
+        exit();
+    }
+    mysqli_stmt_close($stmt);
 
-  //  Prevent duplicate registration
-  $check_sql = "SELECT * FROM student WHERE email = '$email' OR prn = '$prn'";
-  $check_result = mysqli_query($conn, $check_sql);
+    // Upload ID card
+    $id_card_name = $_FILES['id_card']['name'];
+    $id_card_tmp  = $_FILES['id_card']['tmp_name'];
+    $id_card_path = "uploads/IDcard/" . basename($id_card_name);
+    move_uploaded_file($id_card_tmp, $id_card_path);
 
-  if (mysqli_num_rows($check_result) > 0) {
-    echo "<script>alert('⚠️ Email or PRN already registered'); 
-          history.back();</script>";
-    mysqli_close($conn);
-    exit();
-  }
+    // Register in users table
+    $registered = registerUser($username, $email, $password, $role);
 
-  //  Hash password
-  $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    if ($registered) {
+        $user_id = mysqli_insert_id(getConnection());
 
-  //  Upload ID card
-  $id_card_name = $_FILES['id_card']['name'];
-  $id_card_tmp  = $_FILES['id_card']['tmp_name'];
-  $upload_path  = "uploads/" . basename($id_card_name);
-  move_uploaded_file($id_card_tmp, $upload_path);
+        // Insert into students table
+        $stmt2 = mysqli_prepare($conn, "INSERT INTO students (user_id, prn, name, dob, id_card, status)
+                                        VALUES (?, ?, ?, ?, ?, 'pending')");
+        mysqli_stmt_bind_param($stmt2, "issss", $user_id, $prn, $username, $dob, $id_card_path);
+        $success = mysqli_stmt_execute($stmt2);
+        mysqli_stmt_close($stmt2);
 
-  //  Insert into DB with 'pending' status
-  $sql = "INSERT INTO student (name, email, prn, dob, password_hash, id_card, status) 
-          VALUES ('$name', '$email', '$prn', '$dob', '$hashed_password', '$id_card_name', 'pending')";
-
-  if (mysqli_query($conn, $sql)) {
-    echo "<script>alert('✅ Registered. Awaiting admin approval.'); window.location='student-login.php';</script>";
-  } else {
-    echo "<script>alert('❌ Error: " . mysqli_error($conn) . "');</script>";
-  }
-
-  mysqli_close($conn);
+        if ($success) {
+            echo "<script>alert('✅ Registered. Awaiting admin approval.'); window.location='student-login.php';</script>";
+        } else {
+            echo "<script>alert('❌ Error creating student profile.'); history.back();</script>";
+        }
+    } else {
+        echo "<script>alert('❌ Failed to register user.'); history.back();</script>";
+    }
 }
 ?>
+
 
 
 <!DOCTYPE html>
