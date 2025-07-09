@@ -135,6 +135,45 @@ function deleteCompany($id){
 
 
 // --- Job Application Functions ---
+function createJob($company_id, $title, $description, $allowed_streams, $salary, $location, $deadline) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "INSERT INTO jobs (company_id, title, description, allowed_streams, salary, location, last_date_to_apply) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt, "issssss", $company_id, $title, $description,$allowed_streams , $salary, $location, $deadline);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+
+}
+
+function getAllJobs() {
+    $conn = getConnection();
+    $query = "SELECT j.*, c.name as company_name FROM jobs j JOIN companies c ON j.company_id = c.id ORDER BY j.last_date_to_apply DESC";
+    $result = mysqli_query($conn, $query);
+    $jobs = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $jobs[] = $row;
+    }
+    return $jobs;
+}
+
+function getJobById($id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "SELECT j.*, c.name as company_name FROM jobs j JOIN companies c ON j.company_id = c.id WHERE j.id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $job = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+    return $job;
+}
+function updateJob($id, $company_id, $title, $description, $allowed_streams, $salary, $location, $deadline) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "UPDATE jobs SET company_id = ?, title = ?, description = ?, allowed_streams = ?, salary = ?, location = ?, last_date_to_apply = ? WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "issssssi", $company_id, $title, $description, $allowed_streams, $salary, $location, $deadline, $id);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
 function applyToJob($job_id, $student_id) {
     $conn = getConnection();
     $stmt = mysqli_prepare($conn, "INSERT INTO job_applications (job_id, student_id) VALUES (?, ?)");
@@ -143,6 +182,9 @@ function applyToJob($job_id, $student_id) {
     mysqli_stmt_close($stmt);
     return $success;
 }
+
+
+
 
 function getApplicationsByStudent($student_id) {
     $conn = getConnection();

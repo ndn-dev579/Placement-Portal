@@ -46,7 +46,9 @@ CREATE TABLE IF NOT EXISTS jobs (
     company_id INT NOT NULL,
     title VARCHAR(100) NOT NULL,
     description TEXT,
-    allowed_streams TEXT,   
+    allowed_streams TEXT, 
+    salary VARCHAR(50), -- e.g., "50000-70000 per annum"
+    location VARCHAR(100), 
     last_date_to_apply DATE,
     FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 );
