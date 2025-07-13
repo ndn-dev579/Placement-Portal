@@ -1,5 +1,8 @@
 <?php
 require_once '../db-functions.php';
+require_once '../auth-check.php';
+
+checkAccess('student');
 $jobs = getAllJobs();
 
 
@@ -101,7 +104,7 @@ $jobs = getAllJobs();
             <p class="no-jobs">No job postings found.</p>
         <?php else: ?>
             <?php foreach ($jobs as $job): ?>
-                <a class="link-wrapper" href="view-job.php?id=<?= $job['id'] ?>">
+                <a class="link-wrapper" href="job.php?id=<?= $job['id'] ?>">
                     <div class="job-card">
                         <div class="job-title">💼 <?= htmlspecialchars($job['title']) ?></div>
                         <div class="company">🏢 <?= htmlspecialchars($job['company_name']) ?></div>
