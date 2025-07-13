@@ -237,8 +237,16 @@ function applyToJob($job_id, $student_id) {
     return $success;
 }
 
-
-
+function hasStudentAppliedForJob($job_id, $student_id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "SELECT COUNT(*) as count FROM job_applications WHERE job_id = ? AND student_id = ?");
+    mysqli_stmt_bind_param($stmt, "ii", $job_id, $student_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+    return $row['count'] > 0;
+}
 
 function getApplicationsByStudent($student_id) {
     $conn = getConnection();

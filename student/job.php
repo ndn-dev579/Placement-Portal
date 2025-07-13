@@ -27,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
 }
+
+$already_applied = hasStudentAppliedForJob($job_id, $student['id']); // Check if the student already applied
 ?>
 
 <!DOCTYPE html>
@@ -138,9 +140,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="section">
-            <form method="POST">
-                <button type="submit" class="btn edit">✅ Apply</button>
-            </form>
+            <?php if ($already_applied): ?>
+                <p style="color: green; font-weight: bold;">✅ You have already applied for this job.</p>
+            <?php else: ?>
+                <form method="POST">
+                    <button type="submit" class="btn edit">✅ Apply</button>
+                </form>
+            <?php endif; ?>
         </div>
 
         <a href="job-list.php" class="back">← Back to Job Listings</a>
