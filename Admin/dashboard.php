@@ -1,5 +1,13 @@
 <?php
-echo "Entered admin dashboard";
-echo password_hash("admin123", PASSWORD_DEFAULT);
+require_once 'auth-check.php';
+session_start();
 
+echo "Entered admin dashboard";
 ?>
+
+
+<p>
+    welcome, <?php
+    echo $_SESSION['username'];
+    ?>
+</p>

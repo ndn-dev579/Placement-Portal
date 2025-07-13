@@ -1,4 +1,5 @@
 <?php
+require_once 'auth-check.php';
 require_once '../db-functions.php';
 
 if (!isset($_GET['id'])) {
@@ -129,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Salary (₹)</label>
         <input type="text" name="salary" value="<?= htmlspecialchars($job['salary']) ?>" required>
 
-        <label>Location</label> 
+        <label>Location</label>
         <input type="text" name="location" value="<?= htmlspecialchars($job['location']) ?>" required>
 
         <label>Last Date to Apply</label>

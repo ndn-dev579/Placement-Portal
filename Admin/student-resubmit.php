@@ -1,4 +1,5 @@
 <?php
+require_once 'auth-check.php';
 session_start();
 require_once '../db-functions.php';
 

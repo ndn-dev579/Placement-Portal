@@ -1,4 +1,5 @@
 <?php
+require_once 'auth-check.php';
 require_once '../db-functions.php';
 $companies = getAllCompanies();
 ?>

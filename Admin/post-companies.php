@@ -1,4 +1,5 @@
 <?php
+require_once 'auth-check.php';
 require_once '../db-functions.php';
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = $_POST['compName'];

@@ -1,4 +1,5 @@
 <?php
+require_once 'auth-check.php';
 require_once '../db-functions.php';
 
 $success = false;
@@ -20,6 +21,7 @@ if (!isset($_GET['id'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Delete Job</title>
@@ -44,7 +46,9 @@ if (!isset($_GET['id'])) {
 
         .message-box h2 {
             font-size: 20px;
-            color: <?= $success ? '#2e7d32' : '#c62828' ?>;
+            color:
+                <?= $success ? '#2e7d32' : '#c62828' ?>
+            ;
         }
 
         .message-box a {
@@ -62,6 +66,7 @@ if (!isset($_GET['id'])) {
         }
     </style>
 </head>
+
 <body>
 
     <div class="message-box">
@@ -70,4 +75,5 @@ if (!isset($_GET['id'])) {
     </div>
 
 </body>
+
 </html>

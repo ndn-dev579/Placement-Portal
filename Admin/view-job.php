@@ -1,4 +1,5 @@
 <?php
+require_once 'auth-check.php';
 require_once '../db-functions.php';
 
 if (!isset($_GET['id'])) {
@@ -124,13 +125,13 @@ if (!$job) {
         </div>
 
 
-        
-            <div class="section">
-                <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn edit">✏️ Edit</a>
-                <a href="delete-job.php?id=<?= $job['id'] ?>" class="btn delete"
-                    onclick="return confirm('Are you sure you want to delete this job?')">🗑️ Delete</a>
-            </div>
-       
+
+        <div class="section">
+            <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn edit">✏️ Edit</a>
+            <a href="delete-job.php?id=<?= $job['id'] ?>" class="btn delete"
+                onclick="return confirm('Are you sure you want to delete this job?')">🗑️ Delete</a>
+        </div>
+
 
 
         <a href="job-list.php" class="back">← Back to Job Listings</a>
