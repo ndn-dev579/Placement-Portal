@@ -174,6 +174,31 @@ function updateJob($id, $company_id, $title, $description, $allowed_streams, $sa
     mysqli_stmt_close($stmt);
     return $success;
 }
+
+function deleteJob($id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "DELETE FROM jobs WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+function getJobsByCompanyId($company_id) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "SELECT * FROM jobs WHERE company_id = ? ORDER BY last_date_to_apply DESC");
+    mysqli_stmt_bind_param($stmt, "i", $company_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $jobs = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $jobs[] = $row;
+    }
+    mysqli_stmt_close($stmt);
+    return $jobs;
+}
+
+
 function applyToJob($job_id, $student_id) {
     $conn = getConnection();
     $stmt = mysqli_prepare($conn, "INSERT INTO job_applications (job_id, student_id) VALUES (?, ?)");
