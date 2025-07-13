@@ -1,6 +1,4 @@
 <?php
-require_once '../auth-check.php';
-checkAccess('admin');
 require_once '../db-functions.php';
 $jobs = getAllJobs();
 
