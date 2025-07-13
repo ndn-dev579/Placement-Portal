@@ -43,6 +43,35 @@ function getUserByEmailAndRole($email, $role) {
     return $user;
 }
 
+function login($email, $password) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ?");
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $user = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+
+    if ($user && password_verify($password, $user['password'])) {
+        if ($user['role'] === 'admin') {
+            return $user; // Admin can directly log in
+        } elseif ($user['role'] === 'student') {
+            $stmt = mysqli_prepare($conn, "SELECT status FROM students WHERE user_id = ?");
+            mysqli_stmt_bind_param($stmt, "i", $user['id']);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $student = mysqli_fetch_assoc($result);
+            mysqli_stmt_close($stmt);
+
+            if ($student && $student['status'] === 'approved') {
+                return $user; // Student can log in only if approved
+            }
+        }
+    }
+
+    return null; // Login failed
+}
+
 // --- Student Profile Functions ---
 function getStudentByUserId($user_id) {
     $conn = getConnection();
@@ -285,5 +314,7 @@ function updateRejectedStudentBasic($student_id, $prn, $dob, $id_card_path) {
     mysqli_stmt_close($stmt);
     return $success;
 }
+
+
 
 ?>

@@ -1,66 +1,61 @@
-
-
--- USERS table: Shared login table for students and admins
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL, -- Hashed password
-    role ENUM('student', 'admin') NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- STUDENTS table: Additional profile details, linked to users
-CREATE TABLE IF NOT EXISTS student (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL UNIQUE, -- FK to users.id
-    prn VARCHAR(20) NOT NULL UNIQUE,
-    name VARCHAR(100) NOT NULL,
-    phone_number VARCHAR(15) NOT NULL,
-    dob DATE,
-    id_card VARCHAR(255),
-    resume_path VARCHAR(255),
-    gpa_sem1 DECIMAL(4,2),
-    gpa_sem2 DECIMAL(4,2),
-    gpa_sem3 DECIMAL(4,2),
-    gpa_sem4 DECIMAL(4,2),
-    gpa_sem5 DECIMAL(4,2),
-    gpa_sem6 DECIMAL(4,2),
-    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- COMPANIES table
 CREATE TABLE IF NOT EXISTS companies (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    website VARCHAR(255),
-    logo_path VARCHAR(255),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    id int NOT NULL AUTO_INCREMENT,
+    name varchar(100) NOT NULL,
+    description text,
+    website varchar(255) DEFAULT NULL,
+    logo_path varchar(255) DEFAULT NULL,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
 );
-
--- JOBS table
 CREATE TABLE IF NOT EXISTS jobs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    company_id INT NOT NULL,
-    title VARCHAR(100) NOT NULL,
-    description TEXT,
-    allowed_streams TEXT, 
-    salary VARCHAR(50), -- e.g., "50000-70000 per annum"
-    location VARCHAR(100), 
-    last_date_to_apply DATE,
-    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+    id int NOT NULL AUTO_INCREMENT,
+    company_id int NOT NULL,
+    title varchar(100) NOT NULL,
+    description text,
+    allowed_streams text,
+    salary varchar(50) DEFAULT NULL,
+    location varchar(100) DEFAULT NULL,
+    last_date_to_apply date DEFAULT NULL,
+    PRIMARY KEY (id),
+    KEY company_id (company_id)
 );
-
--- JOB APPLICATIONS table
 CREATE TABLE IF NOT EXISTS job_applications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    job_id INT NOT NULL,
-    student_id INT NOT NULL,
-    application_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
-    FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-    UNIQUE (job_id, student_id) -- One student can apply only once per job
+    id int NOT NULL AUTO_INCREMENT,
+    job_id int NOT NULL,
+    student_id int NOT NULL,
+    application_date datetime DEFAULT CURRENT_TIMESTAMP,
+    status enum('pending', 'accepted', 'rejected') DEFAULT 'pending',
+    PRIMARY KEY (id),
+    UNIQUE KEY job_id (job_id, student_id),
+    KEY student_id (student_id)
+);
+CREATE TABLE IF NOT EXISTS students (
+    id int NOT NULL AUTO_INCREMENT,
+    user_id int NOT NULL,
+    prn varchar(20) NOT NULL,
+    name varchar(100) NOT NULL,
+    phone_number varchar(15) NOT NULL,
+    dob date DEFAULT NULL,
+    id_card varchar(255) DEFAULT NULL,
+    resume_path varchar(255) DEFAULT NULL,
+    gpa_sem1 decimal(4, 2) DEFAULT NULL,
+    gpa_sem2 decimal(4, 2) DEFAULT NULL,
+    gpa_sem3 decimal(4, 2) DEFAULT NULL,
+    gpa_sem4 decimal(4, 2) DEFAULT NULL,
+    gpa_sem5 decimal(4, 2) DEFAULT NULL,
+    gpa_sem6 decimal(4, 2) DEFAULT NULL,
+    status enum('pending', 'approved', 'rejected') DEFAULT 'pending',
+    PRIMARY KEY (id),
+    UNIQUE KEY user_id (user_id),
+    UNIQUE KEY prn (prn)
+);
+CREATE TABLE IF NOT EXISTS users (
+    id int NOT NULL AUTO_INCREMENT,
+    username varchar(100) NOT NULL,
+    email varchar(100) NOT NULL,
+    password varchar(255) NOT NULL,
+    role enum('student', 'admin') NOT NULL,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY email (email)
 );
