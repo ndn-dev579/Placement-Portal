@@ -5,7 +5,7 @@ session_start();
 require_once '../db-functions.php';
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['role'] !== 'student') {
-    echo "<script>alert('Access denied'); window.location.href='../student-login.php';</script>";
+    echo "<script>alert('Access denied'); window.location.href='../login.php';</script>";
     exit;
 }
 
@@ -13,7 +13,7 @@ $user_id = $_SESSION['user_id'];
 $student = getStudentByUserId($user_id);
 
 if (!$student) {
-    echo "<script>alert('Student record not found.'); window.location.href='../student-login.php';</script>";
+    echo "<script>alert('Student record not found.'); window.location.href='../login.php';</script>";
     exit;
 }
 
@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     );
 
     if ($updated) {
-        echo "<script>alert('✅ Resubmission successful. Await admin approval.'); window.location.href='../student-login.php';</script>";
+        echo "<script>alert('✅ Resubmission successful. Await admin approval.'); window.location.href='../login.php';</script>";
     } else {
         echo "<script>alert('❌ Failed to resubmit. Try again.'); history.back();</script>";
     }
