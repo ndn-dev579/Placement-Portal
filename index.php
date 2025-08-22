@@ -21,7 +21,7 @@
       <h1 class="nav-logo">CampusHire</h1>
       <nav>
         <a href="index.html"><i class="fas fa-home"></i> Home</a>
-        <a href="view_jobs.html"><i class="fas fa-briefcase"></i> View Jobs</a>
+        <a href="student/jobs.php"><i class="fas fa-briefcase"></i> View Jobs</a>
         <div class="dropdown">
           <button class="dropbtn"><i class="fas fa-sign-in-alt"></i> Login <i class="fas fa-caret-down"></i></button>
           <div class="dropdown-content">

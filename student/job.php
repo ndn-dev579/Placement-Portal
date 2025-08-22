@@ -149,7 +149,7 @@ $already_applied = hasStudentAppliedForJob($job_id, $student['id']); // Check if
             <?php endif; ?>
         </div>
 
-        <a href="job-list.php" class="back">← Back to Job Listings</a>
+        <a href="jobs.php" class="back">← Back to Job Listings</a>
     </div>
 
 </body>

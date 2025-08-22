@@ -106,6 +106,33 @@ function createStudentProfile($user_id, $prn, $name, $phone, $dob, $id_card, $re
     return $success;
 }
 
+
+function updateStudentProfile($user_id, $prn, $name, $phone, $dob, $id_card, $resume, $gpas) {
+    $conn = getConnection();
+    $stmt = mysqli_prepare($conn, "UPDATE students 
+        SET prn = ?, name = ?, phone_number = ?, dob = ?, id_card = ?, resume_path = ?, 
+            gpa_sem1 = ?, gpa_sem2 = ?, gpa_sem3 = ?, gpa_sem4 = ?, gpa_sem5 = ?, gpa_sem6 = ?
+        WHERE user_id = ?");
+    
+    mysqli_stmt_bind_param(
+        $stmt,
+        "sssssssdddddi",
+        $prn,
+        $name,
+        $phone,
+        $dob,
+        $id_card,
+        $resume,
+        $gpas[0], $gpas[1], $gpas[2], $gpas[3], $gpas[4], $gpas[5],
+        $user_id
+    );
+    
+    $success = mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return $success;
+}
+
+
 // --- Company Functions ---
 
 function createCompany($name, $description, $website, $logo_path = null) {
@@ -322,6 +349,8 @@ function updateRejectedStudentBasic($student_id, $prn, $dob, $id_card_path) {
     mysqli_stmt_close($stmt);
     return $success;
 }
+
+
 
 
 

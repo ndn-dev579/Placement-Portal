@@ -1,10 +1,10 @@
 <?php
-require_once '../db-functions.php';
 require_once '../auth-check.php';
 
 checkAccess('student');
-$jobs = getAllJobs();
+require_once '../db-functions.php';
 
+$jobs = getAllJobs();
 
 ?>
 
