@@ -4,98 +4,92 @@ checkAccess('admin');
 require_once '../db-functions.php';
 $jobs = getAllJobs();
 
-
+// include the admin header (sidebar + topbar)
+include 'admin_header.php';
 ?>
 
+<!-- keep original styles but scoped to .job-page so admin layout isn't broken -->
+<style>
+    .job-page {
+        font-family: 'Poppins', sans-serif;
+        background: #f8f9fc;
+        padding: 40px;
+        width: 100%;
+        box-sizing: border-box;
+    }
 
-<!DOCTYPE html>
-<html lang="en">
+    .job-page h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+    }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Listings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f8f9fc;
-            padding: 40px;
-        }
+    .job-container {
+        max-width: 800px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
+    .job-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        border: 1px solid #eee;
+        transition: 0.2s;
+    }
 
-        .job-container {
-            max-width: 800px;
-            margin: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+    .job-card:hover {
+        border-color: #5a80fb;
+    }
 
-        .job-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            cursor: pointer;
-            border: 1px solid #eee;
-            transition: 0.2s;
-        }
+    .job-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #2c3e50;
+    }
 
-        .job-card:hover {
-            border-color: #5a80fb;
-        }
+    .company {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
 
-        .job-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #2c3e50;
-        }
+    .job-info {
+        font-size: 14px;
+        color: #444;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
 
-        .company {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
+    .job-badge {
+        background: #eef2ff;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 13px;
+        color: #333;
+    }
 
-        .job-info {
-            font-size: 14px;
-            color: #444;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+    .link-wrapper {
+        text-decoration: none;
+        color: inherit;
+    }
 
-        .badge {
-            background: #eef2ff;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-            color: #333;
-        }
+    .no-jobs {
+        text-align: center;
+        color: #999;
+        font-size: 16px;
+        margin-top: 50px;
+    }
+</style>
 
-        .link-wrapper {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .no-jobs {
-            text-align: center;
-            color: #999;
-            font-size: 16px;
-            margin-top: 50px;
-        }
-    </style>
-</head>
-
-<body>
-
+<!-- Put your original content inside .job-page so it appears in the admin content area -->
+<div class="job-page">
     <h2>📄 Available Job Opportunities</h2>
 
     <div class="job-container">
@@ -103,21 +97,22 @@ $jobs = getAllJobs();
             <p class="no-jobs">No job postings found.</p>
         <?php else: ?>
             <?php foreach ($jobs as $job): ?>
-                <a class="link-wrapper" href="view-job.php?id=<?= $job['id'] ?>">
+                <a class="link-wrapper" href="view-job.php?id=<?= (int)$job['id'] ?>">
                     <div class="job-card">
                         <div class="job-title">💼 <?= htmlspecialchars($job['title']) ?></div>
                         <div class="company">🏢 <?= htmlspecialchars($job['company_name']) ?></div>
                         <div class="job-info">
-                            <div class="badge">📍 <?= htmlspecialchars($job['location']) ?></div>
-                            <div class="badge">💰 <?= htmlspecialchars($job['salary']) ?></div>
-                            <div class="badge">🕒 Apply by <?= htmlspecialchars($job['last_date_to_apply']) ?></div>
+                            <div class="job-badge">📍 <?= htmlspecialchars($job['location']) ?></div>
+                            <div class="job-badge">💰 <?= htmlspecialchars($job['salary']) ?></div>
+                            <div class="job-badge">🕒 Apply by <?= htmlspecialchars($job['last_date_to_apply']) ?></div>
                         </div>
                     </div>
                 </a>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+</div>
 
-</body>
-
-</html>
+<?php
+// include footer to close content and body/html
+include 'admin_footer.php';

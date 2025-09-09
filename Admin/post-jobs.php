@@ -5,6 +5,8 @@ require_once '../db-functions.php';
 
 $companies = getAllCompanies();
 
+$message = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $company_id = $_POST['company_id'];
     $title = $_POST['title'];
@@ -15,111 +17,122 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $deadline = $_POST['last_date_to_apply'];
 
     if (createJob($company_id, $title, $description, $allowed_streams, $salary, $location, $deadline)) {
-        echo "<div class='success-message'>✅ Job posted successfully. <a href='job-list.php'>View Jobs</a></div>";
+        $message = "<div class='success-message'>✅ Job posted successfully. <a href='job-list.php'>View Jobs</a></div>";
     } else {
-        echo "<div class='error-message'>❌ Failed to post job.</div>";
+        $message = "<div class='error-message'>❌ Failed to post job.</div>";
     }
-    exit;
 }
+
+include 'admin_header.php'; // sidebar + topbar
 ?>
 
+<style>
+    .job-form-page {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f0f4f8, #d9e4f5);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: calc(100vh - 100px); /* account for header */
+    }
 
-<!DOCTYPE html>
-<html lang="en">
+    .job-form-page h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Job</title>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f0f4f8, #d9e4f5);
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    form.job-form {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
 
-        h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
+    form.job-form label {
+        font-weight: 500;
+        color: #333;
+    }
 
-        form {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+    form.job-form input[type="text"],
+    form.job-form input[type="date"],
+    form.job-form input[type="number"],
+    form.job-form textarea,
+    form.job-form select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+        width: 100%;
+    }
 
-        label {
-            font-weight: 500;
-            color: #333;
-        }
+    form.job-form input:focus,
+    form.job-form textarea:focus,
+    form.job-form select:focus {
+        border-color: #5a80fb;
+    }
 
-        input[type="text"],
-        input[type="date"],
-        input[type="number"],
-        textarea,
-        select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            width: 100%;
-        }
+    form.job-form input[type="submit"] {
+        background-color: #5a80fb;
+        color: white;
+        padding: 12px;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
 
-        input[type="text"]:focus,
-        input[type="date"]:focus,
-        textarea:focus,
-        select:focus {
-            border-color: #5a80fb;
-        }
+    form.job-form input[type="submit"]:hover {
+        background-color: #163cb0;
+    }
 
-        input[type="submit"] {
-            background-color: #5a80fb;
-            color: white;
-            padding: 12px;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+    .success-message,
+    .error-message {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
 
-        input[type="submit"]:hover {
-            background-color: #163cb0;
-        }
+    .success-message {
+        color: green;
+    }
 
-        .success-message,
-        .error-message {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
+    .error-message {
+        color: red;
+    }
 
-        .success-message {
-            color: green;
-        }
+    .back-link {
+        margin-bottom: 15px;
+    }
 
-        .error-message {
-            color: red;
-        }
-    </style>
-</head>
+    .back-link a {
+        text-decoration: none;
+        font-size: 14px;
+        color: #5a80fb;
+    }
 
-<body>
+    .back-link a:hover {
+        text-decoration: underline;
+    }
+</style>
 
+<div class="job-form-page">
     <h2>📝 Post a New Job</h2>
 
-    <form method="POST">
+    <?= $message ?>
+
+    <div class="back-link">
+        <a href="job-list.php">⬅️ Back to Job List</a>
+    </div>
+
+    <form class="job-form" method="POST">
         <label>Company</label>
         <select name="company_id" required>
             <option value="">-- Select Company --</option>
@@ -148,7 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <input type="submit" value="Post Job">
     </form>
+</div>
 
-</body>
-
-</html>
+<?php include 'admin_footer.php'; ?>

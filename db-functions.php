@@ -133,6 +133,45 @@ function updateStudentProfile($user_id, $prn, $name, $phone, $dob, $id_card, $re
 }
 
 
+function getAllStudents() {
+    $conn = getConnection();
+    $query = "SELECT s.id, u.username, u.email, s.prn, s.dob, s.phone_number AS phone, s.resume_path AS resume, s.id_card, s.status
+              FROM students s
+              JOIN users u ON s.user_id = u.id
+              ORDER BY s.id DESC";
+    $result = mysqli_query($conn, $query);
+    $students = [];
+    while ($row = mysqli_fetch_assoc($result)) $students[] = $row;
+    return $students;
+}
+
+function getApprovedStudents() {
+    $conn = getConnection();
+    $query = "SELECT s.id, u.username, u.email, s.prn, s.dob, s.phone_number AS phone, s.resume_path AS resume, s.id_card, s.status
+              FROM students s
+              JOIN users u ON s.user_id = u.id
+              WHERE s.status='approved'
+              ORDER BY s.id DESC";
+    $result = mysqli_query($conn, $query);
+    $students = [];
+    while ($row = mysqli_fetch_assoc($result)) $students[] = $row;
+    return $students;
+}
+
+function getRejectedStudents() {
+    $conn = getConnection();
+    $query = "SELECT s.id, u.username, u.email, s.prn, s.dob, s.phone_number AS phone, s.resume_path AS resume, s.id_card, s.status
+              FROM students s
+              JOIN users u ON s.user_id = u.id
+              WHERE s.status='rejected'
+              ORDER BY s.id DESC";
+    $result = mysqli_query($conn, $query);
+    $students = [];
+    while ($row = mysqli_fetch_assoc($result)) $students[] = $row;
+    return $students;
+}
+
+
 // --- Company Functions ---
 
 function createCompany($name, $description, $website, $logo_path = null) {

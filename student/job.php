@@ -3,6 +3,7 @@ require_once '../auth-check.php';
 checkAccess('student');
 require_once '../db-functions.php';
 
+// session_start();
 $user_id = $_SESSION['user_id']; // Assuming user_id is stored in session after login
 $student = getStudentByUserId($user_id);
 
