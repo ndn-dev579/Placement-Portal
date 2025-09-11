@@ -1,197 +1,82 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: aliceblue;
+  background-size: cover;
+  background-position: center;
 
-  body{
-    background: linear-gradient(to right, #519aee, #a7d3f0);
-    /* background-repeat: no-repeat;
-    background-size: cover; */
-    color: #000;
-    
-  }
-  .navbar {
-    background-color: #00408058;
-    color: white;
-    padding: 1rem 0;
-  }
-
-  .nav-container {
-    max-width: 1200px;
-    margin: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 1rem;
-  }
-
-  .logo {
-    margin: 0;
-  }
-
-  nav a, .dropbtn {
-    color: white;
-    margin: 0 1rem;
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  nav {
-    display: flex;
-    align-items: center;
-  }
-
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-
-  .dropbtn {
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: white;
-    color: black;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-    z-index: 1;
-  }
-
-  .dropdown-content a {
-    color: black;
-    padding: 0.75rem 1rem;
-    display: block;
-    text-decoration: none;
-  }
-
-  .dropdown-content a:hover {
-    background-color: #dddddd;
-  }
-
-  .dropdown:hover .dropdown-content {
-    display: block;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-  .hero-content{
-    font-size: 4rem;
-    font-family:'Times New Roman', serif;
-    text-align: center;
-    line-height: .5rem;
-  }
-
-  .sub-heading{
-    font-size: 3rem;
-    font-family: serif;
-    font-weight: lighter;
-    font-style: italic;
-    color: #313030;
-    margin-bottom: 5rem;
-
-  }
-
-  .login{
-    display: flex;
-    justify-content: center;
-    gap:2rem;
-    
-  }
-
-.login-image{
-    width:100%;
-    max-width:300px;
-    height: 80%; 
+  display: flex; /* Use flexbox to arrange items horizontally */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100vh;
+  margin: 0; /* Remove default body margin */
+  /* Removed margin-right: 150px; as justify-content: center will handle spacing */
 }
 
-
-.login-content{
-    display: flex;
-    flex-direction: column;
-    border-radius: 2rem;
-    background-color: #fafafa;
-    width: 20rem;
-    height: 20rem;
-    box-sizing: border-box;
-    overflow: hidden;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+.login-illustration {
+  max-width: 500px; /* Adjust size of the illustration as needed */
+  height: auto; /* Maintain aspect ratio */
+  margin-right: 50px; /* Space between the illustration and the login form */
+  /* Add any other specific styling for the image here */
 }
 
-.btn{
-  border-radius:2rem; /*12rem; 12rem */
+.login-container {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 350px;
+  /* Other existing styles for login-container */
+}
+
+.login-container h2 {
+  margin-bottom: 20px;
   text-align: center;
-  padding: .5rem 1rem;
-  margin: 0 auto;
 }
 
-.primary{
-  background-color: #007bff;
-  color: #fefdfd;
-  transition: background-color .5s ease-in-out;
+.login-container label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: 500;
+  color: rgb(52, 48, 48);
 }
 
-.btn.primary{
-  text-decoration: none;
-  display: inline-block;
+.login-container input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s;
 }
 
-.btn.primary:hover,.btn.primary:focus{
-  background-color: #046fe1;
-  transform: scale(1.05);
+.login-container input:focus {
+  border-color: #6c63ff;
+  outline: none;
 }
 
-@media (max-width:1130px){
-  .main-heading{
-    font-size: 4rem;
-  }
-  .sub-heading{
-    font-size: 2rem;
-  }
+.login-btn { /* Changed from .login-container .login-btn if you want to use it outside too */
+  margin-top: 20px;
+  width: 100%;
+  background: #6c63ff;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
-@media (max-width:756px){
-  .main-heading{
-    font-size: 3rem;
-  }
-  .sub-heading{
-    font-size: 2rem;
-  }
-  .login{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
+.login-btn:hover {
+  color: rgb(253, 252, 252);
+  font-size: 17px;
+  background-color: #163cb0;
 }
 
-@media (max-width:590px){
-  .main-heading{
-    font-size: 2rem;
-  }
-  .sub-heading{
-    font-size: 1rem;
-  }
-  .nav-container{ 
-    flex-direction: column;
-  }
-  .login{
-    flex-direction: row;
-  }
-  .login-content{
-    transform: scale(80%);
-  }
+.login-btn:active{
+  background-color: #110c61;
 }
 
-
-
-
+/* Remove or adapt these if they conflict with the new layout */
+/* .student-admin-btn, .role-toggle, .toggle-btn */
+/* .bg-illustration (no longer needed as we're using <img> tag) */

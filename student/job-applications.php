@@ -1,114 +1,92 @@
 <?php
-require_once '../auth-check.php';
-checkAccess('student');
-require_once '../db-functions.php';
+// Includes the sidebar, auth checks, and DB functions.
+require_once 'student_header.php';
 
-//session_start();
-$user_id = $_SESSION['user_id']; // Assuming user_id is stored in session after login
+// Get the current student's ID from the session.
+$user_id = $_SESSION['user_id'];
 $student = getStudentByUserId($user_id);
 
-// Fetch all job applications for the student using the existing function
-$job_applications = getApplicationsByStudent($student['id']); // Fetch applications
-
+// Fetch all job applications for this student.
+$job_applications = [];
+if ($student) {
+    $job_applications = getApplicationsByStudent($student['id']);
+}
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<!-- Custom styles for the status badges -->
+<style>
+    .status-badge {
+        font-size: 0.85em;
+        padding: 0.5em 0.9em;
+        font-weight: 600;
+    }
+</style>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Job Applications</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f8f9fc;
-            padding: 40px;
-        }
+<!-- Page Content -->
+<div class="container-fluid">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="card-title mb-0">📄 My Job Applications</h4>
+        </div>
+        <div class="card-body">
+            <p class="card-text text-muted">Here you can track the status of all the jobs you've applied for.</p>
 
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
-
-        .applications-container {
-            max-width: 800px;
-            margin: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .application-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 1px solid #eee;
-        }
-
-        .job-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #2c3e50;
-        }
-
-        .company {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .status {
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .status.pending {
-            color: #f39c12;
-        }
-
-        .status.accepted {
-            color: #27ae60;
-        }
-
-        .status.rejected {
-            color: #e74c3c;
-        }
-
-        .no-applications {
-            text-align: center;
-            color: #999;
-            font-size: 16px;
-            margin-top: 50px;
-        }
-    </style>
-</head>
-
-<body>
-
-    <h2>📄 My Job Applications</h2>
-
-    <div class="applications-container">
-        <?php if (empty($job_applications)): ?>
-            <p class="no-applications">You have not applied for any jobs yet.</p>
-        <?php else: ?>
-            <?php foreach ($job_applications as $application): ?>
-                <div class="application-card">
-                    <div class="job-title">💼 <?= htmlspecialchars($application['title']) ?></div>
-                    <div class="company">🏢 <?= htmlspecialchars($application['company_name']) ?></div>
-                    <div class="status <?= htmlspecialchars(strtolower($application['status'])) ?>">
-                        Status: <?= htmlspecialchars(ucfirst($application['status'])) ?>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
+            <div class="table-responsive mt-4">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Job Title</th>
+                            <th scope="col">Company</th>
+                            <th scope="col">Date Applied</th>
+                            <th scope="col" class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($job_applications)): ?>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="alert alert-primary text-center mt-3">
+                                        You haven't applied for any jobs yet. <a href="jobs.php" class="alert-link">Click here to find opportunities!</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($job_applications as $application): ?>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold"><?= htmlspecialchars($application['title']) ?></div>
+                                    </td>
+                                    <td>
+                                        <div class="text-secondary"><?= htmlspecialchars($application['company_name']) ?></div>
+                                    </td>
+                                    <td><?= date('F j, Y', strtotime($application['application_date'])) ?></td>
+                                    <td class="text-center">
+                                        <?php
+                                        $status = strtolower($application['status']);
+                                        $badge_class = 'bg-secondary'; // Default
+                                        if ($status == 'applied') {
+                                            $badge_class = 'bg-primary';
+                                        } elseif ($status == 'shortlisted') {
+                                            $badge_class = 'bg-success';
+                                        } elseif ($status == 'rejected') {
+                                            $badge_class = 'bg-danger';
+                                        }
+                                        ?>
+                                        <span class="badge rounded-pill status-badge <?= $badge_class ?>">
+                                            <?= htmlspecialchars(ucfirst($application['status'])) ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+</div>
 
-</body>
-
-</html>
+<?php
+// Includes the closing HTML tags and necessary JS.
+require_once 'student_footer.php';
+?>

@@ -49,12 +49,23 @@ CREATE TABLE IF NOT EXISTS jobs (
     PRIMARY KEY (id),
     KEY company_id (company_id)
 );
+-- CREATE TABLE IF NOT EXISTS job_applications (
+--     id int NOT NULL AUTO_INCREMENT,
+--     job_id int NOT NULL,
+--     student_id int NOT NULL,
+--     application_date datetime DEFAULT CURRENT_TIMESTAMP,
+--     status enum('pending', 'accepted', 'rejected') DEFAULT 'pending',
+--     PRIMARY KEY (id),
+--     UNIQUE KEY job_id (job_id, student_id),
+--     KEY student_id (student_id)
+-- );
+
 CREATE TABLE IF NOT EXISTS job_applications (
     id int NOT NULL AUTO_INCREMENT,
     job_id int NOT NULL,
     student_id int NOT NULL,
     application_date datetime DEFAULT CURRENT_TIMESTAMP,
-    status enum('pending', 'accepted', 'rejected') DEFAULT 'pending',
+    status enum('Applied', 'Shortlisted', 'Rejected') NOT NULL DEFAULT 'Applied',
     PRIMARY KEY (id),
     UNIQUE KEY job_id (job_id, student_id),
     KEY student_id (student_id)

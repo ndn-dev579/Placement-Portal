@@ -29,9 +29,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     mysqli_stmt_close($stmt);
 
     // Upload ID card
+    // In the "Upload ID card" section
     $id_card_name = $_FILES['id_card']['name'];
     $id_card_tmp = $_FILES['id_card']['tmp_name'];
-    $id_card_path = "uploads/IDcard/" . basename($id_card_name);
+
+    // Create a new, unique filename to prevent overwriting files
+    $unique_filename = uniqid() . '_' . basename($id_card_name);
+    $id_card_path = "uploads/IDcard/" . $unique_filename;
+
     move_uploaded_file($id_card_tmp, $id_card_path);
 
     // Register in users table

@@ -136,8 +136,8 @@ $pending_students = mysqli_fetch_assoc(
             </div>
 
 
-            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'manage_applications.php' ? 'active' : '' ?>"
-                href="manage_applications.php">📄 Applications</a>
+            <a class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'view-applications.php' ? 'active' : '' ?>"
+                href="view-applications.php">📄 Applications</a>
 
             <a class="nav-link" href="../logout.php">🚪 Logout</a>
         </nav>

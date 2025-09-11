@@ -1,16 +1,22 @@
 <?php
-require_once '../auth-check.php';
+require_once 'auth-check.php';
 checkAccess('student');
-session_start();
-require_once '../db-functions.php';
 
-if (!isset($_SESSION['logged_in']) || $_SESSION['role'] !== 'student') {
-    echo "<script>alert('Access denied'); window.location.href='../login.php';</script>";
-    exit;
+require_once 'db-functions.php';
+
+// At the top of student-resubmit.php
+
+
+// Deny access if they weren't sent here from a rejected login
+if (!isset($_SESSION['resubmit_user_id'])) {
+    // Using die() is simple, or you can redirect
+    die("Access Denied: You do not have permission to view this page.");
 }
 
-$user_id = $_SESSION['user_id'];
+// Now, get the user ID from the special session variable
+$user_id = $_SESSION['resubmit_user_id'];
 $student = getStudentByUserId($user_id);
+// ... rest of your code
 
 if (!$student) {
     echo "<script>alert('Student record not found.'); window.location.href='../login.php';</script>";
@@ -22,15 +28,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $dob = $_POST['dob'];
 
     $id_card_path = $student['id_card'];
+
     if (!empty($_FILES['id_card']['name'])) {
         $id_card_name = $_FILES['id_card']['name'];
         $id_card_tmp = $_FILES['id_card']['tmp_name'];
-        $id_card_path = "uploads/IDcard/" . basename($id_card_name);
 
-        // Use correct full path for saving the file
-        $upload_target_path = __DIR__ . '/../' . $id_card_path;
+        $unique_filename = uniqid() . '_' . basename($id_card_name);
+        $id_card_path = "uploads/IDcard/" . $unique_filename;
+
+        // --- THIS IS THE CORRECTED LINE ---
+        $upload_target_path = __DIR__ . '/' . $id_card_path;
+
         if (!move_uploaded_file($id_card_tmp, $upload_target_path)) {
-            echo "<script>alert('❌ Failed to upload ID card.'); history.back();</script>";
+            // If it still fails, it's almost certainly a permissions issue.
+            echo "<script>alert('❌ Failed to upload. Please check folder permissions.'); history.back();</script>";
             exit;
         }
     }
@@ -43,7 +54,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     );
 
     if ($updated) {
-        echo "<script>alert('✅ Resubmission successful. Await admin approval.'); window.location.href='../login.php';</script>";
+        unset($_SESSION['resubmit_user_id']);
+        echo "<script>alert('✅ Resubmission successful. Awaiting admin approval.'); window.location.href='login.php';</script>";
     } else {
         echo "<script>alert('❌ Failed to resubmit. Try again.'); history.back();</script>";
     }
