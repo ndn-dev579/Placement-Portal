@@ -9,7 +9,7 @@ function getConnection()
     if ($conn === null) {
         // Use environment variables if available, otherwise fall back to defaults
         $host = getenv('DB_HOST') ?: "localhost";
-        $user = getenv('DB_USER_NAME') ?: "root";
+        $user = getenv('DB_USERNAME') ?: "root";
         $pass = getenv('DB_PASSWORD') ?: "";
         $dbname = getenv('DB_NAME') ?: "campushire";
         $port = getenv('DB_PORT') ?: 3306;
