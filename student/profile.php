@@ -693,7 +693,7 @@ $gravatar_url = $user ? getGravatarUrl($user['email']) : '';
                         <p class="card-subtitle text-muted mb-1"><?= htmlspecialchars($experience['company_name'] ?? 'Company') ?></p>
                         <small class="text-muted">
                           <?= ucfirst($experience['experience_type'] ?? 'experience') ?>
-                          <?php if ($experience['location']): ?>
+                          <?php if ($experience['location'] ?? ''): ?>
                             • <?= htmlspecialchars($experience['location'] ?? '') ?>
                           <?php endif; ?>
                         </small>
