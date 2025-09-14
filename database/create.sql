@@ -1,3 +1,11 @@
+-- Drop tables if they exist (in reverse dependency order)
+DROP TABLE IF EXISTS job_applications;
+DROP TABLE IF EXISTS jobs;
+DROP TABLE IF EXISTS companies;
+DROP TABLE IF EXISTS students;
+DROP TABLE IF EXISTS users;
+
+-- Create tables
 CREATE TABLE IF NOT EXISTS users (
     id int NOT NULL AUTO_INCREMENT,
     username varchar(100) NOT NULL,
@@ -13,7 +21,7 @@ CREATE TABLE IF NOT EXISTS students (
     user_id int NOT NULL,
     prn varchar(20) NOT NULL,
     name varchar(100) NOT NULL,
-    phone_number varchar(15) NOT NULL,
+    phone_number varchar(15) DEFAULT NULL,
     dob date DEFAULT NULL,
     id_card varchar(255) DEFAULT NULL,
     resume_path varchar(255) DEFAULT NULL,

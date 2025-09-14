@@ -1,5 +1,6 @@
 <?php
-require_once "admin_header.php"; // sidebar + topbar + session check
+require_once "../auth-check.php";
+checkAccess("admin");
 require_once "../db-functions.php";
 
 $status = $_GET['status'] ?? 'all';
@@ -41,13 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // After action, redirect back with toast message in session
     if ($toastMsg) {
-        session_start();
         $_SESSION['toastMsg'] = $toastMsg;
         $_SESSION['toastType'] = $toastType;
         header("Location: manage_students.php?status={$status}");
         exit;
     }
 }
+
+require_once "admin_header.php"; // sidebar + topbar + session check
 
 // --- Fetch students ---
 $conn = getConnection();
@@ -63,7 +65,6 @@ if ($status === 'all') {
 }
 
 // --- Check for toast message ---
-// session_start();
 if (!empty($_SESSION['toastMsg'])) {
     $toastMsg = $_SESSION['toastMsg'];
     $toastType = $_SESSION['toastType'] ?? 'info';

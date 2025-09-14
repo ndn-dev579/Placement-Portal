@@ -19,6 +19,8 @@ services:
       - DB_PASSWORD=rootpassword
     networks:
       - placement-network
+    extra_hosts:
+      - "localhost:host-gateway"
 
   # MySQL Database
   db:
