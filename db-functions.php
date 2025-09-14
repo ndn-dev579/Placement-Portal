@@ -9,11 +9,12 @@ function getConnection()
     if ($conn === null) {
         // Use environment variables if available, otherwise fall back to defaults
         $host = getenv('DB_HOST') ?: "localhost";
-        $user = getenv('DB_USER') ?: "root";
+        $user = getenv('DB_USER_NAME') ?: "root";
         $pass = getenv('DB_PASSWORD') ?: "";
         $dbname = getenv('DB_NAME') ?: "campushire";
+        $port = getenv('DB_PORT') ?: 3306;
 
-        $conn = mysqli_connect($host, $user, $pass, $dbname);
+        $conn = mysqli_connect($host, $user, $pass, $dbname, $port);
 
         if (!$conn) {
             die("Connection failed: " . mysqli_connect_error());
@@ -327,23 +328,24 @@ function getCompleteStudentProfile($student_id)
 {
     // Get basic student info
     $student = getStudentByUserId($student_id);
-    if (!$student) return null;
-    
+    if (!$student)
+        return null;
+
     // Get academic info
     $academic_info = getStudentAcademicInfo($student['id']);
-    
+
     // Get contact info
     $contact_info = getStudentContactInfo($student['id']);
-    
+
     // Get skills
     $skills = getStudentSkills($student['id']);
-    
+
     // Get projects
     $projects = getStudentProjects($student['id']);
-    
+
     // Get experiences
     $experiences = getStudentExperiences($student['id']);
-    
+
     return [
         'basic' => $student,
         'academic' => $academic_info,
@@ -545,12 +547,12 @@ function getFilteredJobs($searchTerm = '', $location = '', $stream = '')
 
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
-    
+
     $jobs = [];
     while ($row = mysqli_fetch_assoc($result)) {
         $jobs[] = $row;
     }
-    
+
     mysqli_stmt_close($stmt);
     return $jobs;
 }
@@ -659,7 +661,7 @@ function getAllJobApplications()
                 companies c ON j.company_id = c.id
             ORDER BY 
                 ja.application_date DESC";
-    
+
     $result = mysqli_query($conn, $query);
     if (!$result) {
         // It's good practice to check for query errors
@@ -715,7 +717,7 @@ function getFilteredJobApplications($searchTerm = '', $status = '')
         $params[] = $status;
         $types .= 's';
     }
-    
+
     $query .= " ORDER BY ja.application_date DESC";
 
     $stmt = mysqli_prepare($conn, $query);
@@ -723,7 +725,7 @@ function getFilteredJobApplications($searchTerm = '', $status = '')
     if (!empty($params)) {
         mysqli_stmt_bind_param($stmt, $types, ...$params);
     }
-    
+
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 

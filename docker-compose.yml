@@ -15,7 +15,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_NAME=campushire
-      - DB_USER=root
+      - DB_USER_NAME=root
       - DB_PASSWORD=rootpassword
     networks:
       - placement-network
