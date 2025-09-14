@@ -1,3 +1,15 @@
+-- Insert admin user
+INSERT INTO users (username, email, password, role)
+VALUES (
+    'admin',
+    'admin@placement.com',
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', -- password
+    'admin'
+);
+
+-- Email: admin@placement.com
+-- Password: password
+
 -- Insert companies
 INSERT INTO companies (name, description, website, logo_path)
 VALUES (

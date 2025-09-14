@@ -180,6 +180,11 @@ $student_initial = strtoupper(substr($student_name, 0, 1));
                     <i data-lucide="user"></i> My Profile
                 </a>
             </li>
+            <li>
+                <a href="resumes.php" class="nav-link <?= $currentPage == 'resumes.php' ? 'active' : '' ?>">
+                    <i data-lucide="file-text"></i> Resume Templates
+                </a>
+            </li>
         </ul>
         
         <div class="sidebar-footer">

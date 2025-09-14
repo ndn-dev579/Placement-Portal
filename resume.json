@@ -1,0 +1,87 @@
+{
+  "student_profile": {
+    "basic_info": {
+      "user_id": "integer",
+      "student_id": "integer",
+      "prn": "string",
+      "name": "string",
+      "phone_number": "string",
+      "dob": "date",
+      "id_card": "file_path",
+      "resume_path": "file_path",
+      "status": "string",
+      "created_at": "datetime",
+      "updated_at": "datetime"
+    },
+    "user_info": {
+      "id": "integer",
+      "username": "string",
+      "email": "string",
+      "role": "string",
+      "created_at": "datetime"
+    },
+    "academic_info": {
+      "id": "integer",
+      "student_id": "integer",
+      "institution_name": "string",
+      "course_name": "string",
+      "branch": "string",
+      "graduation_year": "integer",
+      "cgpa": "decimal",
+      "created_at": "datetime",
+      "updated_at": "datetime"
+    },
+    "contact_info": {
+      "id": "integer",
+      "student_id": "integer",
+      "linkedin_url": "string",
+      "github_url": "string",
+      "portfolio_url": "string",
+      "created_at": "datetime",
+      "updated_at": "datetime"
+    },
+    "skills": {
+      "id": "integer",
+      "student_id": "integer",
+      "technical_skills": "string (comma-separated)",
+      "soft_skills": "string (comma-separated)",
+      "languages": "string (comma-separated)",
+      "created_at": "datetime",
+      "updated_at": "datetime"
+    },
+    "projects": "array",
+    "experiences": "array",
+    "gravatar": {
+      "email": "string",
+      "gravatar_url": "string"
+    }
+  },
+  "projects": [
+    {
+      "id": "integer",
+      "student_id": "integer",
+      "project_name": "string",
+      "description": "string",
+      "technologies": "string (comma-separated)",
+      "project_url": "string",
+      "created_at": "datetime",
+      "updated_at": "datetime"
+    }
+  ],
+  "experiences": [
+    {
+      "id": "integer",
+      "student_id": "integer",
+      "experience_type": "string",
+      "company_name": "string",
+      "position": "string",
+      "description": "string",
+      "start_date": "date",
+      "end_date": "date",
+      "is_current": "boolean",
+      "location": "string",
+      "created_at": "datetime",
+      "updated_at": "datetime"
+    }
+  ]
+}
