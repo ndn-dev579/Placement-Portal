@@ -3,17 +3,27 @@ require_once "../auth-check.php";
 checkAccess("admin");
 require_once "../db-functions.php";
 
-// Backend logic to handle status update
+// Backend logic to handle status update (POST request)
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['application_id'])) {
     $application_id = $_POST['application_id'];
     $new_status = $_POST['new_status'];
     updateApplicationStatus($application_id, $new_status);
-    header("Location: view-applications.php");
+    
+    // Preserve search filters after update by adding them to the redirect URL
+    $queryString = http_build_query($_GET);
+    header("Location: view-applications.php?" . $queryString);
     exit;
 }
 
+// This starts the HTML output
 require_once 'admin_header.php';
-$applications = getAllJobApplications();
+
+// Get search and filter parameters from the URL (GET request)
+$searchTerm = $_GET['search'] ?? '';
+$status = $_GET['status'] ?? '';
+
+// Fetch applications using our new filtering function
+$applications = getFilteredJobApplications($searchTerm, $status);
 ?>
 
 <style>
@@ -30,9 +40,33 @@ $applications = getAllJobApplications();
             <h4 class="card-title mb-0">Student Job Applications</h4>
         </div>
         <div class="card-body">
-            <p class="card-text">A comprehensive list of all applications submitted through the portal.</p>
+            <p class="card-text text-muted">Search and manage all applications submitted through the portal.</p>
+            
+            <!-- Search and Filter Form -->
+            <form action="view-applications.php" method="GET" class="mb-4">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <input type="text" name="search" class="form-control" placeholder="Search by Student, Job, or Company..." value="<?= htmlspecialchars($searchTerm) ?>">
+                    </div>
+                    <div class="col-md-5">
+                        <select name="status" class="form-select">
+                            <option value="">All Statuses</option>
+                            <option value="Applied" <?= $status == 'Applied' ? 'selected' : '' ?>>Applied</option>
+                            <option value="Shortlisted" <?= $status == 'Shortlisted' ? 'selected' : '' ?>>Shortlisted</option>
+                            <option value="Rejected" <?= $status == 'Rejected' ? 'selected' : '' ?>>Rejected</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex">
+                        <button type="submit" class="btn btn-info flex-grow-1">Filter</button>
+                        <a href="view-applications.php" class="btn btn-outline-secondary ms-2" title="Clear Filters">
+                           <i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th>App ID</th>
@@ -48,25 +82,26 @@ $applications = getAllJobApplications();
                     <tbody>
                         <?php if (empty($applications)): ?>
                             <tr>
-                                <td colspan="8" class="text-center p-4">No job applications submitted yet.</td>
+                                <td colspan="8" class="text-center p-4">No applications found matching your criteria. <a href="view-applications.php">Clear filters</a> to see all applications.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($applications as $app): ?>
                                 <tr>
-                                    <td>#<?php echo htmlspecialchars($app['application_id']); ?></td>
-                                    <td><?php echo htmlspecialchars($app['student_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($app['prn']); ?></td>
-                                    <td><?php echo htmlspecialchars($app['job_title']); ?></td>
-                                    <td><?php echo htmlspecialchars($app['company_name']); ?></td>
-                                    <td><?php echo date('F j, Y', strtotime($app['application_date'])); ?></td>
+                                    <td>#<?= htmlspecialchars($app['application_id']); ?></td>
+                                    <td><?= htmlspecialchars($app['student_name']); ?></td>
+                                    <td><?= htmlspecialchars($app['prn']); ?></td>
+                                    <td><?= htmlspecialchars($app['job_title']); ?></td>
+                                    <td><?= htmlspecialchars($app['company_name']); ?></td>
+                                    <td><?= date('F j, Y', strtotime($app['application_date'])); ?></td>
                                     <td>
-                                        <span class="status-badge status-<?php echo strtolower(htmlspecialchars($app['status'])); ?>">
-                                            <?php echo htmlspecialchars($app['status']); ?>
+                                        <span class="status-badge status-<?= strtolower(htmlspecialchars($app['status'])); ?>">
+                                            <?= htmlspecialchars($app['status']); ?>
                                         </span>
                                     </td>
                                     <td>
-                                        <form action="" method="POST" class="d-flex">
-                                            <input type="hidden" name="application_id" value="<?php echo $app['application_id']; ?>">
+                                        <!-- The form action now includes the current filters -->
+                                        <form action="view-applications.php?<?= http_build_query($_GET) ?>" method="POST" class="d-flex">
+                                            <input type="hidden" name="application_id" value="<?= $app['application_id']; ?>">
                                             <select name="new_status" class="form-select form-select-sm me-2" style="width: 120px;">
                                                 <option value="Applied" <?php if ($app['status'] == 'Applied') echo 'selected'; ?>>Applied</option>
                                                 <option value="Shortlisted" <?php if ($app['status'] == 'Shortlisted') echo 'selected'; ?>>Shortlisted</option>

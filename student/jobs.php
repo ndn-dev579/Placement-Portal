@@ -2,8 +2,13 @@
 // This single line includes the sidebar, auth checks, and DB functions.
 require_once 'student_header.php';
 
-// Fetch all available jobs.
-$jobs = getAllJobs();
+// Get search and filter parameters from the URL (using the GET method).
+$searchTerm = $_GET['search'] ?? '';
+$location = $_GET['location'] ?? '';
+$stream = $_GET['stream'] ?? '';
+
+// Fetch jobs using the existing filtering function from db-functions.php
+$jobs = getFilteredJobs($searchTerm, $location, $stream);
 ?>
 
 <!-- Custom styles for this page, complementing Bootstrap -->
@@ -15,11 +20,6 @@ $jobs = getAllJobs();
         transform: translateY(-5px);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
     }
-    .company-logo {
-        width: 50px;
-        height: 50px;
-        object-fit: contain;
-    }
 </style>
 
 <!-- Page Content -->
@@ -29,12 +29,35 @@ $jobs = getAllJobs();
             <h4 class="card-title mb-0">📄 Available Job Opportunities</h4>
         </div>
         <div class="card-body">
-            <p class="card-text text-muted">Browse and apply for jobs posted by companies hiring from our campus.</p>
+            
+            <!-- Search and Filter Form -->
+            <form action="jobs.php" method="GET" class="mb-4 p-3 bg-light border rounded-3">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Search Title/Company</label>
+                        <input type="text" id="search" name="search" class="form-control" placeholder="e.g., Software Engineer" value="<?= htmlspecialchars($searchTerm) ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" id="location" name="location" class="form-control" placeholder="e.g., Ernakulam" value="<?= htmlspecialchars($location) ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="stream" class="form-label">Stream</label>
+                        <input type="text" id="stream" name="stream" class="form-control" placeholder="e.g., CSE" value="<?= htmlspecialchars($stream) ?>">
+                    </div>
+                    <div class="col-md-2 d-flex mt-auto">
+                        <button type="submit" class="btn btn-primary flex-grow-1">Filter</button>
+                        <a href="jobs.php" class="btn btn-outline-secondary ms-2" title="Clear Filters">
+                           <i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
 
             <div class="list-group mt-4">
                 <?php if (empty($jobs)): ?>
                     <div class="alert alert-info text-center">
-                        There are currently no job postings available. Please check back later!
+                        No job postings found matching your criteria. Try a different search or <a href="jobs.php" class="alert-link">clear the filters</a>.
                     </div>
                 <?php else: ?>
                     <?php foreach ($jobs as $job): ?>
@@ -64,3 +87,4 @@ $jobs = getAllJobs();
 // This single line includes the closing HTML tags and necessary JS.
 require_once 'student_footer.php';
 ?>
+

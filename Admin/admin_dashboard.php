@@ -77,7 +77,7 @@ include 'admin_header.php';
 <div class="card mt-4 p-3">
   <div class="d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Recent Applications</h5>
-    <a href="manage_applications.php" class="btn btn-sm btn-outline-primary">View all</a>
+    <a href="view-applications.php" class="btn btn-sm btn-outline-primary">View all</a>
   </div>
   <div class="table-responsive mt-3">
     <table class="table align-middle">

@@ -57,13 +57,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
         }
         .login-illustration {
-            max-width: 500px;
+            max-width: 600px;
             margin-right: 50px; /* Adjusts space between image and form */
         }
+
+        
+
+        
     </style>
 </head>
 
 <body>
+
+
+
+
 <img src="pictures/login-illustration.png" alt="Illustration" class="login-illustration">
 
     <div class="login-container">

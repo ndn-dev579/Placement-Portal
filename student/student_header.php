@@ -153,7 +153,7 @@ $student_initial = strtoupper(substr($student_name, 0, 1));
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-brand-container">
-            <a href="../index.html" class="sidebar-brand">
+            <a href="../index.php" class="sidebar-brand">
                 CampusHire
             </a>
         </div>

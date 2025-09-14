@@ -1,118 +1,91 @@
 <?php
-require_once '../auth-check.php';
-checkAccess('admin');
-require_once '../db-functions.php';
-$jobs = getAllJobs();
+// Includes the sidebar, auth checks, and all DB functions
+require_once 'admin_header.php';
 
-// include the admin header (sidebar + topbar)
-include 'admin_header.php';
+// Get search and filter parameters from the URL (using the GET method)
+$searchTerm = $_GET['search'] ?? '';
+$location = $_GET['location'] ?? '';
+$stream = $_GET['stream'] ?? '';
+
+// Fetch the jobs using our new filtering function
+$jobs = getFilteredJobs($searchTerm, $location, $stream);
 ?>
 
-<!-- keep original styles but scoped to .job-page so admin layout isn't broken -->
-<style>
-    .job-page {
-        font-family: 'Poppins', sans-serif;
-        background: #f8f9fc;
-        padding: 40px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    .job-page h2 {
-        text-align: center;
-        color: #333;
-        margin-bottom: 30px;
-    }
-
-    .job-container {
-        max-width: 800px;
-        margin: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .job-card {
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        cursor: pointer;
-        border: 1px solid #eee;
-        transition: 0.2s;
-    }
-
-    .job-card:hover {
-        border-color: #5a80fb;
-    }
-
-    .job-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 5px;
-        color: #2c3e50;
-    }
-
-    .company {
-        color: #777;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
-
-    .job-info {
-        font-size: 14px;
-        color: #444;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .job-badge {
-        background: #eef2ff;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 13px;
-        color: #333;
-    }
-
-    .link-wrapper {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .no-jobs {
-        text-align: center;
-        color: #999;
-        font-size: 16px;
-        margin-top: 50px;
-    }
-</style>
-
-<!-- Put your original content inside .job-page so it appears in the admin content area -->
-<div class="job-page">
-    <h2>📄 Available Job Opportunities</h2>
-
-    <div class="job-container">
-        <?php if (empty($jobs)): ?>
-            <p class="no-jobs">No job postings found.</p>
-        <?php else: ?>
-            <?php foreach ($jobs as $job): ?>
-                <a class="link-wrapper" href="view-job.php?id=<?= (int)$job['id'] ?>">
-                    <div class="job-card">
-                        <div class="job-title">💼 <?= htmlspecialchars($job['title']) ?></div>
-                        <div class="company">🏢 <?= htmlspecialchars($job['company_name']) ?></div>
-                        <div class="job-info">
-                            <div class="job-badge">📍 <?= htmlspecialchars($job['location']) ?></div>
-                            <div class="job-badge">💰 <?= htmlspecialchars($job['salary']) ?></div>
-                            <div class="job-badge">🕒 Apply by <?= htmlspecialchars($job['last_date_to_apply']) ?></div>
-                        </div>
+<div class="container-fluid">
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title mb-0">💼 Manage Job Postings</h4>
+            <a href="post-jobs.php" class="btn btn-primary">Post New Job</a>
+        </div>
+        <div class="card-body">
+            
+            <!-- Search and Filter Form -->
+            <form action="job-list.php" method="GET" class="mb-4">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control" placeholder="Search by Title or Company..." value="<?= htmlspecialchars($searchTerm) ?>">
                     </div>
-                </a>
-            <?php endforeach; ?>
-        <?php endif; ?>
+                    <div class="col-md-3">
+                        <input type="text" name="location" class="form-control" placeholder="Filter by Location..." value="<?= htmlspecialchars($location) ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="stream" class="form-control" placeholder="Filter by Stream..." value="<?= htmlspecialchars($stream) ?>">
+                    </div>
+                    <div class="col-md-2 d-flex">
+                        <button type="submit" class="btn btn-info flex-grow-1">Search</button>
+                        <!-- Link to clear filters -->
+                        <a href="job-list.php" class="btn btn-outline-secondary ms-2" title="Clear Filters">
+                           <i data-lucide="rotate-cw" style="width:16px; height:16px;"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Location</th>
+                            <th>Streams</th>
+                            <th>Salary</th>
+                            <th>Apply By</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($jobs)): ?>
+                            <tr>
+                                <td colspan="7" class="text-center p-4">
+                                    No jobs found matching your criteria. <a href="job-list.php">Clear filters</a> to see all jobs.
+                                </td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($jobs as $job): ?>
+                                <tr>
+                                    <td><strong><?= htmlspecialchars($job['title']) ?></strong></td>
+                                    <td><?= htmlspecialchars($job['company_name']) ?></td>
+                                    <td><?= htmlspecialchars($job['location']) ?></td>
+                                    <td><?= htmlspecialchars($job['allowed_streams']) ?></td>
+                                    <td><?= htmlspecialchars($job['salary']) ?></td>
+                                    <td><?= date('d M, Y', strtotime($job['last_date_to_apply'])) ?></td>
+                                    <td>
+                                        <!-- Actions like Edit and Delete would go here -->
+                                        <a href="edit-job.php?id=<?= $job['id'] ?>" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <a href="delete-job.php?id=<?= $job['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this job?')">Delete</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
 <?php
-// include footer to close content and body/html
-include 'admin_footer.php';
+// Includes the closing HTML tags and necessary JS
+require_once 'admin_footer.php';
+?>

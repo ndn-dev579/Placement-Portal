@@ -300,6 +300,64 @@ function getJobById($id)
     mysqli_stmt_close($stmt);
     return $job;
 }
+
+
+function getFilteredJobs($searchTerm = '', $location = '', $stream = '')
+{
+    $conn = getConnection();
+    // Base query that joins jobs with companies
+    $query = "SELECT j.*, c.name as company_name 
+              FROM jobs j 
+              JOIN companies c ON j.company_id = c.id 
+              WHERE 1=1"; // Start with a condition that's always true
+
+    $params = [];
+    $types = '';
+
+    // Add conditions if search terms are provided
+    if (!empty($searchTerm)) {
+        $query .= " AND (j.title LIKE ? OR c.name LIKE ?)";
+        $searchTermWildcard = "%" . $searchTerm . "%";
+        $params[] = $searchTermWildcard;
+        $params[] = $searchTermWildcard;
+        $types .= 'ss';
+    }
+
+    if (!empty($location)) {
+        $query .= " AND j.location LIKE ?";
+        $locationWildcard = "%" . $location . "%";
+        $params[] = $locationWildcard;
+        $types .= 's';
+    }
+
+    if (!empty($stream)) {
+        $query .= " AND j.allowed_streams LIKE ?";
+        $streamWildcard = "%" . $stream . "%";
+        $params[] = $streamWildcard;
+        $types .= 's';
+    }
+
+    $query .= " ORDER BY j.last_date_to_apply DESC";
+
+    $stmt = mysqli_prepare($conn, $query);
+
+    // Bind parameters if any exist
+    if (!empty($params)) {
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+    }
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    $jobs = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $jobs[] = $row;
+    }
+    
+    mysqli_stmt_close($stmt);
+    return $jobs;
+}
+
 function updateJob($id, $company_id, $title, $description, $allowed_streams, $salary, $location, $deadline)
 {
     $conn = getConnection();
@@ -418,7 +476,67 @@ function getAllJobApplications()
     return $applications;
 }
 
+function getFilteredJobApplications($searchTerm = '', $status = '')
+{
+    $conn = getConnection();
+    $query = "SELECT 
+                ja.id AS application_id, 
+                u.username AS student_name, 
+                s.prn, 
+                j.title AS job_title, 
+                c.name AS company_name, 
+                ja.application_date, 
+                ja.status
+            FROM 
+                job_applications ja
+            JOIN 
+                students s ON ja.student_id = s.id
+            JOIN 
+                users u ON s.user_id = u.id
+            JOIN 
+                jobs j ON ja.job_id = j.id
+            JOIN 
+                companies c ON j.company_id = c.id
+            WHERE 1=1"; // Start with a condition that's always true
 
+    $params = [];
+    $types = '';
+
+    // Add search term condition (student name, job title, company)
+    if (!empty($searchTerm)) {
+        $query .= " AND (u.username LIKE ? OR j.title LIKE ? OR c.name LIKE ?)";
+        $searchTermWildcard = "%" . $searchTerm . "%";
+        $params[] = $searchTermWildcard;
+        $params[] = $searchTermWildcard;
+        $params[] = $searchTermWildcard;
+        $types .= 'sss';
+    }
+
+    // Add status filter condition
+    if (!empty($status)) {
+        $query .= " AND ja.status = ?";
+        $params[] = $status;
+        $types .= 's';
+    }
+    
+    $query .= " ORDER BY ja.application_date DESC";
+
+    $stmt = mysqli_prepare($conn, $query);
+
+    if (!empty($params)) {
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+    }
+    
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $applications = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $applications[] = $row;
+    }
+    mysqli_stmt_close($stmt);
+    return $applications;
+}
 
 function updateApplicationStatus($application_id, $new_status)
 {

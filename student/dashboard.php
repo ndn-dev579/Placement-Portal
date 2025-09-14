@@ -1,6 +1,7 @@
 <?php
 require_once '../auth-check.php';
 checkAccess('student');
+require_once '../db-functions.php';
 
 
 

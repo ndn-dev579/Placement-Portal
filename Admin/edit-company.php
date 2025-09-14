@@ -3,165 +3,124 @@ require_once '../auth-check.php';
 checkAccess('admin');
 require_once '../db-functions.php';
 
+// Check if an ID is provided in the URL
 if (!isset($_GET['id'])) {
-    echo "No company ID provided.";
-    exit;
+    // It's better to redirect or show a proper error page
+    die("Error: No company ID provided. <a href='company-list.php'>Go back</a>");
 }
 
 $id = intval($_GET['id']);
 $company = getCompanyById($id);
 
+// Check if the company exists
 if (!$company) {
-    echo "Company not found.";
-    exit;
+    die("Error: Company not found. <a href='company-list.php'>Go back</a>");
 }
 
+// Handle the form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
-    // $title = $_POST['title'];
     $description = $_POST['description'];
     $website = $_POST['website'];
-    $existing_logo = $_POST['existing_logo'];
+    
+    // Start with the existing logo filename from the database
+    $logo_path = $company['logo_path']; 
 
-    // Handle new logo upload (optional)
-    $logo_path = $existing_logo; // default to existing
-    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === 0) {
+    // Check if a new logo file has been uploaded successfully
+    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === 0 && $_FILES['logo']['size'] > 0) {
+        
+        // Define the physical directory to save the file (from admin folder, go up one level)
         $uploadDir = "../uploads/logo/";
-        $newLogoName = basename($_FILES['logo']['name']);
-        $newLogoPath = $uploadDir . $newLogoName;
+        
+        // --- BEST PRACTICE: Create a unique filename to prevent overwrites ---
+        $fileExtension = strtolower(pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION));
+        $uniqueLogoName = "company_" . $id . "_" . time() . "." . $fileExtension;
+        
+        $newLogoPath = $uploadDir . $uniqueLogoName;
 
+        // Try to move the uploaded file to the destination
         if (move_uploaded_file($_FILES['logo']['tmp_name'], $newLogoPath)) {
-            $logo_path = "uploads/logo/" . $newLogoName;
+            // If successful, this is the FILENAME to store in the database
+            $logo_path = $uniqueLogoName;
+        } else {
+            // Handle potential upload failure
+            echo "❌ Error: Failed to upload the new logo.";
+            exit;
         }
     }
 
+    // Call the database function to update the company details
     if (updateCompany($id, $name, $description, $website, $logo_path)) {
-        echo "✅ Company updated successfully. <a href='company-list.php'>Go back</a>";
+        echo "✅ Company updated successfully. <a href='company-list.php'>Go back to company list</a>";
     } else {
-        echo "❌ Failed to update company.";
+        echo "❌ Failed to update company in the database.";
     }
-    exit;
+    exit; // Stop script execution after processing
 }
 ?>
 
-<!-- HTML form -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update company</title>
+    <title>Edit Company</title>
+    <!-- Simple styling for a clean look -->
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f0f4f8, #d9e4f5);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-
-        }
-
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        form {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            /* gap: 15px; */
-
-        }
-
-        label {
-            font-weight: 500;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        input[type="text"],
-        input[type="url"],
-        input[type="file"],
-        textarea {
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            transition: border 0.3s;
-            width: 100%;
-        }
-
-        input[type="text"]:focus,
-        input[type="url"]:focus,
-        input[type="file"]:focus,
-        textarea:focus {
-            border-color: #5a80fb;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        img {
-            max-width: 100px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-
-        input[type="submit"] {
-            margin-top: 10px;
-            padding: 12px;
-            background-color: #5a80fb;
-            color: white;
-            font-weight: 600;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #163cb0;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 2rem; }
+        .container { max-width: 600px; margin: auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        form div { margin-bottom: 1rem; }
+        label { display: block; font-weight: bold; margin-bottom: 0.5rem; }
+        input[type="text"], input[type="url"], textarea { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        textarea { min-height: 120px; resize: vertical; }
+        .logo-preview img { max-width: 100px; border-radius: 6px; border: 1px solid #ddd; }
+        input[type="submit"] { width: 100%; padding: 0.75rem; background-color: #2563EB; color: white; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.3s; }
+        input[type="submit"]:hover { background-color: #1D4ED8; }
     </style>
-
 </head>
-
 <body>
 
+    <div class="container">
+        <h2>Edit Company Details</h2>
+        <form method="POST" enctype="multipart/form-data">
+            
+            <div>
+                <label for="name">Company Name</label>
+                <input type="text" id="name" name="name" value="<?= htmlspecialchars($company['name']) ?>" required>
+            </div>
 
-    <h2>Edit Company</h2>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="id" value="<?= htmlspecialchars($company['id']) ?>">
-        <input type="hidden" name="existing_logo" value="<?= htmlspecialchars($company['logo_path']) ?>">
+            <div>
+                <label for="description">Description</label>
+                <textarea id="description" name="description"><?= htmlspecialchars($company['description']) ?></textarea>
+            </div>
 
-        <label>Company Name</label><br>
-        <input type="text" name="name" value="<?= htmlspecialchars($company['name']) ?>" required><br><br>
+            <div>
+                <label for="website">Website</label>
+                <input type="url" id="website" name="website" value="<?= htmlspecialchars($company['website']) ?>">
+            </div>
 
-        <label>Description</label><br>
-        <textarea name="description"><?= htmlspecialchars($company['description']) ?></textarea><br><br>
+            <div>
+                <label>Current Logo</label>
+                <div class="logo-preview">
+                    <?php if (!empty($company['logo_path'])): ?>
+                        <!-- This is the corrected image path, now manually built -->
+                        <img src="../uploads/logo/<?= htmlspecialchars($company['logo_path']) ?>" alt="Company Logo">
+                    <?php else: ?>
+                        <p>No logo uploaded.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+            
+            <div>
+                <label for="logo">Upload New Logo (Optional)</label>
+                <input type="file" id="logo" name="logo">
+            </div>
 
-        <label>Website</label><br>
-        <input type="url" name="website" value="<?= htmlspecialchars($company['website']) ?>"><br><br>
+            <input type="submit" value="Update Company">
+        </form>
+    </div>
 
-        <label>Current Logo:</label><br>
-        <?php if (!empty($company['logo_path'])): ?>
-            <img src="../uploads/logo/<?= htmlspecialchars($company['logo_path']) ?>" alt="Company Logo" width="100"><br>
-        <?php endif; ?>
-        <input type="file" name="logo"><br><br>
-
-        <input type="submit" value="Update Company">
-    </form>
 </body>
-
 </html>
+
