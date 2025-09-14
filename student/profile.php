@@ -158,7 +158,7 @@ $student = getStudentByUserId($user_id);
               <div class="input-group">
                 <span class="input-group-text">Sem <?= $i ?></span>
                 <input type="number" step="0.01" name="gpa_sem<?= $i ?>" class="form-control"
-                  value="<?= htmlspecialchars($student['gpa_sem' . $i] ?? '') ?>" required>
+                  value="<?= htmlspecialchars($student['gpa_sem' . $i] ?? 0) ?>">
               </div>
             </div>
           <?php endfor; ?>
