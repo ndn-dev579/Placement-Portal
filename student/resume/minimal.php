@@ -86,6 +86,18 @@ $resume_data = [
             padding: 1rem;
         }
 
+        <?php if (isset($_GET['preview'])): ?>
+        body {
+            background-color: transparent;
+            padding: 0;
+        }
+        .resume-container {
+            margin: 0;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        <?php endif; ?>
+
         .resume-container {
             max-width: 8.5in;
             margin: 2rem auto;

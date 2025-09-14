@@ -79,6 +79,16 @@ $start_year = $resume_data['graduation_year'] !== 'Not provided' ? ($resume_data
             background-color: #f5f5f5;
         }
 
+        <?php if (isset($_GET['preview'])): ?>
+        body {
+            background-color: transparent;
+        }
+        .resume-container {
+            margin: 0;
+            box-shadow: none;
+        }
+        <?php endif; ?>
+
         .resume-container {
             max-width: 900px;
             margin: 20px auto;

@@ -47,6 +47,17 @@ $gravatar_url = $user ? getGravatarUrl($user['email']) : '';
             background-color: #f5f5f5;
         }
 
+        <?php if (isset($_GET['preview'])): ?>
+        body {
+            background-color: transparent;
+        }
+        .resume-container {
+            margin: 0;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        <?php endif; ?>
+
         .resume-container {
             max-width: 900px;
             margin: 20px auto;
