@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  # PHP Application
+  web:
+    build: .
+    container_name: placement-portal-web
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./uploads:/var/www/html/uploads
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=campushire
+      - DB_USER=root
+      - DB_PASSWORD=rootpassword
+    networks:
+      - placement-network
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: placement-portal-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: campushire
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - placement-network
+
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: placement-portal-phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      - db
+    networks:
+      - placement-network
+
+volumes:
+  mysql_data:
+
+networks:
+  placement-network:
+    driver: bridge
