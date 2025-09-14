@@ -7,10 +7,11 @@ function getConnection()
     static $conn = null;
 
     if ($conn === null) {
-        $host = "localhost";
-        $user = "root";
-        $pass = "";
-        $dbname = "campushire";
+        // Use environment variables if available, otherwise fall back to defaults
+        $host = getenv('DB_HOST') ?: "localhost";
+        $user = getenv('DB_USER') ?: "root";
+        $pass = getenv('DB_PASSWORD') ?: "";
+        $dbname = getenv('DB_NAME') ?: "campushire";
 
         $conn = mysqli_connect($host, $user, $pass, $dbname);
 
