@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS student_contact_info;
 DROP TABLE IF EXISTS student_academic_info;
 DROP TABLE IF EXISTS students;
 DROP TABLE IF EXISTS users;
-
 -- Create tables
 CREATE TABLE IF NOT EXISTS users (
     id int NOT NULL AUTO_INCREMENT,
@@ -38,7 +37,6 @@ CREATE TABLE IF NOT EXISTS students (
     UNIQUE KEY prn (prn),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 -- Student Academic Information Table
 CREATE TABLE IF NOT EXISTS student_academic_info (
     id int NOT NULL AUTO_INCREMENT,
@@ -50,12 +48,10 @@ CREATE TABLE IF NOT EXISTS student_academic_info (
     cgpa decimal(4, 2) DEFAULT NULL,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
     PRIMARY KEY (id),
     UNIQUE KEY student_id (student_id),
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );
-
 -- Student Contact Information Table
 CREATE TABLE IF NOT EXISTS student_contact_info (
     id int NOT NULL AUTO_INCREMENT,
@@ -65,12 +61,10 @@ CREATE TABLE IF NOT EXISTS student_contact_info (
     portfolio_url varchar(255) DEFAULT NULL,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
     PRIMARY KEY (id),
     UNIQUE KEY student_id (student_id),
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );
-
 -- Student Skills Table
 CREATE TABLE IF NOT EXISTS student_skills (
     id int NOT NULL AUTO_INCREMENT,
@@ -80,12 +74,10 @@ CREATE TABLE IF NOT EXISTS student_skills (
     languages text DEFAULT NULL,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
     PRIMARY KEY (id),
     UNIQUE KEY student_id (student_id),
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );
-
 -- Student Projects Table
 CREATE TABLE IF NOT EXISTS student_projects (
     id int NOT NULL AUTO_INCREMENT,
@@ -96,17 +88,22 @@ CREATE TABLE IF NOT EXISTS student_projects (
     project_url varchar(255) DEFAULT NULL,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
     PRIMARY KEY (id),
     KEY student_id (student_id),
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );
-
 -- Student Experience Table
 CREATE TABLE IF NOT EXISTS student_experience (
     id int NOT NULL AUTO_INCREMENT,
     student_id int NOT NULL,
-    experience_type enum('internship', 'job', 'freelance', 'volunteer', 'research', 'training') NOT NULL,
+    experience_type enum(
+        'internship',
+        'job',
+        'freelance',
+        'volunteer',
+        'research',
+        'training'
+    ) NOT NULL,
     company_name varchar(200) NOT NULL,
     position varchar(200) NOT NULL,
     description text,
@@ -115,12 +112,10 @@ CREATE TABLE IF NOT EXISTS student_experience (
     is_current boolean DEFAULT false,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    
     PRIMARY KEY (id),
     KEY student_id (student_id),
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS companies (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(100) NOT NULL,
@@ -143,8 +138,6 @@ CREATE TABLE IF NOT EXISTS jobs (
     KEY company_id (company_id),
     FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
 );
-
-
 CREATE TABLE IF NOT EXISTS job_applications (
     id int NOT NULL AUTO_INCREMENT,
     job_id int NOT NULL,
