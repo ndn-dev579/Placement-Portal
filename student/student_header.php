@@ -6,8 +6,23 @@ checkAccess("student");
 // We'll need the db functions for any page that uses this header
 require_once "../db-functions.php";
 
-// Get the logged-in student's name and create an initial for the avatar
-$student_name = $_SESSION['username'] ?? 'Student';
+// --- LOGIC TO FETCH THE CORRECT STUDENT NAME ---
+
+// Get user ID from session
+$user_id = $_SESSION['user_id'] ?? 0;
+
+// Fetch the full student profile to get their actual name
+$student_profile = getStudentByUserId($user_id);
+
+// Use the name from the student's profile if it exists, otherwise fall back to the username
+if ($student_profile && !empty($student_profile['name'])) {
+    $student_name = $student_profile['name'];
+} else {
+    // Fallback for students who haven't created a profile yet
+    $student_name = $_SESSION['username'] ?? 'Student';
+}
+
+// Create an initial for the avatar using the determined name
 $student_initial = strtoupper(substr($student_name, 0, 1));
 ?>
 <!DOCTYPE html>

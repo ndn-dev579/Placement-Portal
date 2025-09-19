@@ -740,7 +740,7 @@ function getFilteredJobApplications($searchTerm = '', $status = '')
 function updateApplicationStatus($application_id, $new_status)
 {
     // Use the new, user-friendly status values
-    $allowed_statuses = ['Applied', 'Shortlisted', 'Rejected'];
+    $allowed_statuses = ['applied', 'shortlisted', 'rejected', 'accepted'	];
     if (!in_array($new_status, $allowed_statuses)) {
         return false; // Invalid status
     }
@@ -815,6 +815,29 @@ function updateRejectedStudentBasic($student_id, $prn, $dob, $id_card_path)
 
 
 
-
+function getJobsNearingDeadline($days = 7)
+{
+    $conn = getConnection();
+    $future_date = date('Y-m-d', strtotime("+$days days"));
+    $today = date('Y-m-d');
+    
+    $query = "SELECT j.id, j.title, c.name AS company_name, j.last_date_to_apply 
+              FROM jobs j
+              JOIN companies c ON j.company_id = c.id
+              WHERE j.last_date_to_apply BETWEEN ? AND ?
+              ORDER BY j.last_date_to_apply ASC";
+              
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "ss", $today, $future_date);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    $jobs = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $jobs[] = $row;
+    }
+    mysqli_stmt_close($stmt);
+    return $jobs;
+}
 
 ?>

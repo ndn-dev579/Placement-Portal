@@ -1,158 +1,110 @@
 <?php
-require_once '../auth-check.php';
-checkAccess('student');
-require_once '../db-functions.php';
+// This includes the sidebar, auth checks, and all DB functions.
+require_once 'student_header.php';
 
-// session_start();
-$user_id = $_SESSION['user_id']; // Assuming user_id is stored in session after login
+// 1. Get the Job ID from the URL.
+if (!isset($_GET['id'])) {
+    // A simple way to handle missing ID, can be improved with a proper error page.
+    die("<div class='alert alert-danger'>Error: No Job ID provided. <a href='jobs.php'>Go back to jobs list</a>.</div>");
+}
+$job_id = intval($_GET['id']);
+
+// 2. Get the current student's ID from their profile.
+$user_id = $_SESSION['user_id'];
 $student = getStudentByUserId($user_id);
 
-if (!isset($_GET['id'])) {
-    echo "❌ Job ID not provided.";
-    exit;
+// Check if the student has a profile, which is required to apply.
+if (!$student) {
+    die("<div class='alert alert-warning'>Please complete your profile before applying for jobs. <a href='profile.php'>Go to Profile</a>.</div>");
+}
+$student_id = $student['id'];
+
+// 3. Handle the "Apply Now" form submission.
+$success_message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply_for_job'])) {
+    
+    // Call the function from db-functions.php to save the application.
+    $success = applyToJob($job_id, $student_id);
+
+    if ($success) {
+        $success_message = "You have successfully applied for this job!";
+    } else {
+        // This could happen if there's a database constraint error (e.g., already applied).
+        $error_message = "There was an error submitting your application. You may have already applied for this job.";
+    }
 }
 
-$job_id = intval($_GET['id']);
+// 4. Fetch the full job details.
 $job = getJobById($job_id);
 
 if (!$job) {
-    echo "❌ Job not found.";
-    exit;
+    die("<div class='alert alert-danger'>Error: Job not found.</div>");
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (applyToJob($job_id, $student['id'])) {
-        echo "✅ Successfully applied for the job!";
-    } else {
-        echo "❌ Failed to apply for the job. Please try again.";
-    }
-    exit;
-}
-
-$already_applied = hasStudentAppliedForJob($job_id, $student['id']); // Check if the student already applied
+// 5. Check if the student has already applied for this job to update the button status.
+$has_applied = hasStudentAppliedForJob($job_id, $student_id);
 ?>
 
-<!DOCTYPE html>
-<html>
+<!-- Page Content -->
+<div class="container-fluid">
+    
+    <!-- Display Success or Error Messages -->
+    <?php if ($success_message): ?>
+        <div class="alert alert-success"><?= $success_message ?></div>
+    <?php endif; ?>
+    <?php if (isset($error_message)): ?>
+        <div class="alert alert-danger"><?= $error_message ?></div>
+    <?php endif; ?>
 
-<head>
-    <meta charset="UTF-8">
-    <title><?= htmlspecialchars($job['title']) ?> - Job Details</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f9f9fb;
-            padding: 40px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            padding: 30px;
-        }
-
-        h2 {
-            margin-top: 0;
-            color: #2c3e50;
-        }
-
-        .meta {
-            margin-bottom: 10px;
-            font-size: 15px;
-            color: #555;
-        }
-
-        .label {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .value {
-            color: #444;
-        }
-
-        .section {
-            margin: 20px 0;
-        }
-
-        .back {
-            display: inline-block;
-            margin-top: 20px;
-            color: #5a80fb;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .back:hover {
-            text-decoration: underline;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 16px;
-            margin-right: 10px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-
-        .btn.edit {
-            background-color: #5a80fb;
-            color: white;
-        }
-
-        .btn.edit:hover {
-            background-color: #3a60e0;
-        }
-
-        .btn.delete {
-            background-color: #ff4d4f;
-            color: white;
-        }
-
-        .btn.delete:hover {
-            background-color: #d9363e;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="container">
-        <h2>💼 <?= htmlspecialchars($job['title']) ?></h2>
-
-        <div class="meta"><span class="label">Company:</span> <?= htmlspecialchars($job['company_name']) ?></div>
-        <div class="meta"><span class="label">Location:</span> <?= htmlspecialchars($job['location']) ?></div>
-        <div class="meta"><span class="label">Salary:</span> <?= htmlspecialchars($job['salary']) ?></div>
-        <div class="meta"><span class="label">Last Date to Apply:</span>
-            <?= htmlspecialchars($job['last_date_to_apply']) ?></div>
-        <div class="meta"><span class="label">Allowed Streams:</span>
-            <?= nl2br(htmlspecialchars($job['allowed_streams'])) ?></div>
-
-        <div class="section">
-            <h3>📝 Job Description</h3>
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="card-title mb-0"><?= htmlspecialchars($job['title']) ?></h4>
+                <p class="card-text text-muted mb-0">at <?= htmlspecialchars($job['company_name']) ?></p>
+            </div>
+            <a href="jobs.php" class="btn btn-outline-secondary">← Back to All Jobs</a>
+        </div>
+        <div class="card-body p-4">
+            
+            <h5 class="fw-semibold">Job Description</h5>
             <p><?= nl2br(htmlspecialchars($job['description'])) ?></p>
-        </div>
 
-        <div class="section">
-            <?php if ($already_applied): ?>
-                <p style="color: green; font-weight: bold;">✅ You have already applied for this job.</p>
-            <?php else: ?>
-                <form method="POST">
-                    <button type="submit" class="btn edit">✅ Apply</button>
-                </form>
-            <?php endif; ?>
-        </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5 class="fw-semibold">Details</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Location:</strong> <?= htmlspecialchars($job['location']) ?></li>
+                        <li><strong>Salary:</strong> <?= htmlspecialchars($job['salary']) ?></li>
+                        <li><strong>Allowed Streams:</strong> <?= htmlspecialchars($job['allowed_streams']) ?></li>
+                        <li><strong>Apply By:</strong> <?= date('F j, Y', strtotime($job['last_date_to_apply'])) ?></li>
+                    </ul>
+                </div>
+            </div>
 
-        <a href="jobs.php" class="back">← Back to Job Listings</a>
+            <hr class="my-4">
+
+            <!-- Application Button Logic -->
+            <div class="text-center">
+                <?php if ($has_applied || $success_message): ?>
+                    <!-- If student has applied, show a disabled button -->
+                    <button class="btn btn-success btn-lg" disabled>
+                        <i data-lucide="check-circle" class="me-2"></i> Applied Successfully
+                    </button>
+                <?php else: ?>
+                    <!-- Otherwise, show the application form with the "Apply Now" button -->
+                    <form method="POST" action="">
+                        <input type="hidden" name="apply_for_job" value="1">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            Apply Now
+                        </button>
+                    </form>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
+</div>
 
-</body>
-
-</html>
+<?php
+// This includes the closing HTML tags and necessary JS.
+require_once 'student_footer.php';
+?>

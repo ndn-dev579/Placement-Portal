@@ -1,4 +1,5 @@
 <?php
+// All backend logic must come before any HTML output.
 require_once "../auth-check.php";
 checkAccess("admin");
 require_once "../db-functions.php";
@@ -15,14 +16,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['application_id'])) {
     exit;
 }
 
-// This starts the HTML output
+// Now we can start outputting the HTML page
 require_once 'admin_header.php';
 
 // Get search and filter parameters from the URL (GET request)
 $searchTerm = $_GET['search'] ?? '';
 $status = $_GET['status'] ?? '';
 
-// Fetch applications using our new filtering function
+// Fetch applications using our filtering function
 $applications = getFilteredJobApplications($searchTerm, $status);
 ?>
 
@@ -30,7 +31,8 @@ $applications = getFilteredJobApplications($searchTerm, $status);
     .table { margin-top: 25px; box-shadow: 0 2px 8px rgba(0, 0, 0, .08); }
     .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; color: white; font-size: 12px; font-weight: 500; text-transform: capitalize; }
     .status-applied { background-color: #0d6efd; } /* Blue for Applied */
-    .status-shortlisted { background-color: #198754; } /* Green for Shortlisted */
+    .status-shortlisted { background-color: #ffc107; color: #000; } /* Yellow for Shortlisted */
+    .status-accepted { background-color: #198754; } /* Green for Accepted (Offer) */
     .status-rejected { background-color: #dc3545; } /* Red for Rejected */
 </style>
 
@@ -51,9 +53,10 @@ $applications = getFilteredJobApplications($searchTerm, $status);
                     <div class="col-md-5">
                         <select name="status" class="form-select">
                             <option value="">All Statuses</option>
-                            <option value="Applied" <?= $status == 'Applied' ? 'selected' : '' ?>>Applied</option>
-                            <option value="Shortlisted" <?= $status == 'Shortlisted' ? 'selected' : '' ?>>Shortlisted</option>
-                            <option value="Rejected" <?= $status == 'Rejected' ? 'selected' : '' ?>>Rejected</option>
+                            <option value="applied" <?= $status == 'applied' ? 'selected' : '' ?>>Applied</option>
+                            <option value="shortlisted" <?= $status == 'shortlisted' ? 'selected' : '' ?>>Shortlisted</option>
+                            <option value="accepted" <?= $status == 'accepted' ? 'selected' : '' ?>>Accepted</option>
+                            <option value="rejected" <?= $status == 'rejected' ? 'selected' : '' ?>>Rejected</option>
                         </select>
                     </div>
                     <div class="col-md-2 d-flex">
@@ -103,9 +106,10 @@ $applications = getFilteredJobApplications($searchTerm, $status);
                                         <form action="view-applications.php?<?= http_build_query($_GET) ?>" method="POST" class="d-flex">
                                             <input type="hidden" name="application_id" value="<?= $app['application_id']; ?>">
                                             <select name="new_status" class="form-select form-select-sm me-2" style="width: 120px;">
-                                                <option value="Applied" <?php if ($app['status'] == 'Applied') echo 'selected'; ?>>Applied</option>
-                                                <option value="Shortlisted" <?php if ($app['status'] == 'Shortlisted') echo 'selected'; ?>>Shortlisted</option>
-                                                <option value="Rejected" <?php if ($app['status'] == 'Rejected') echo 'selected'; ?>>Rejected</option>
+                                                <option value="applied" <?php if ($app['status'] == 'applied') echo 'selected'; ?>>Applied</option>
+                                                <option value="shortlisted" <?php if ($app['status'] == 'shortlisted') echo 'selected'; ?>>Shortlisted</option>
+                                                <option value="accepted" <?php if ($app['status'] == 'accepted') echo 'selected'; ?>>Accepted</option>
+                                                <option value="rejected" <?php if ($app['status'] == 'rejected') echo 'selected'; ?>>Rejected</option>
                                             </select>
                                             <button type="submit" class="btn btn-primary btn-sm">Update</button>
                                         </form>
@@ -123,3 +127,4 @@ $applications = getFilteredJobApplications($searchTerm, $status);
 <?php
 require_once 'admin_footer.php';
 ?>
+
