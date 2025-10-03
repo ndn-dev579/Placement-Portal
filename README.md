@@ -13,7 +13,7 @@
 
 A comprehensive web-based platform designed to streamline and automate campus placement activities, catering specifically to students and the college's Training & Placement Office (Admin).
 
-![Admin Dashboard Screenshot](./assets/dashboard.png)
+![Admin Dashboard Screenshot](./pictures/dashboard.png)
 ---
 
 ## 📝 Overview
@@ -57,6 +57,6 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 ## 📞 Contact
 
-[Your Name] - [your.email@example.com]
+[Nandana C M] - [nandanacm772@gmail.com]
 
-Project Link: [https://github.com/your-username/your-repo-name](https://github.com/your-username/your-repo-name)
+Project Link: [https://github.com/ndn-dev579/Placement-Portal](https://github.com/ndn-dev579/Placement-Portal)
